@@ -1,0 +1,21 @@
+[tool.poetry]
+name = "csv-to-sql"
+version = "0.1.0"
+description = ""
+authors = ["Cauê Beloni <cbeloni@gmail.com>"]
+readme = "README.md"
+packages = [{include = "csv_to_sql"}]
+
+[tool.poetry.dependencies]
+python = "^3.11"
+mysql-connector-python = "^8.0.33"
+pandas = "^2.0.2"
+python-dotenv = "^1.0.0"
+
+
+[build-system]
+requires = ["poetry-core"]
+build-backend = "poetry.core.masonry.api"
+
+[tool.poetry.scripts]
+main = "csv_to_sql.main:run"
