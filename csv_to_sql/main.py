@@ -52,13 +52,16 @@ def run():
             CD_SGRU_CID, CD_CID, DS_CID, SN_INTERNADO, DS_ENDERECO, NR_ENDERECO, NM_BAIRRO, NR_CEP)
             VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
         """
+        try:
+            # Executar a consulta SQL
+            cursor.execute(sql, (cd_atendimento, dt_atendimento, tp_atendimento, ds_ori_ate, ds_leito, dt_prevista_alta, dt_alta,
+                                cd_sgru_cid, cd_cid, ds_cid, sn_internado, ds_endereco, nr_endereco, nm_bairro, nr_cep))
+            
+            # Confirmar as alterações no banco de dados
+            conexao.commit()
+        except Exception as e:
+            print('except: {}', e)
         
-        # Executar a consulta SQL
-        cursor.execute(sql, (cd_atendimento, dt_atendimento, tp_atendimento, ds_ori_ate, ds_leito, dt_prevista_alta, dt_alta,
-                            cd_sgru_cid, cd_cid, ds_cid, sn_internado, ds_endereco, nr_endereco, nm_bairro, nr_cep))
-        
-        # Confirmar as alterações no banco de dados
-        conexao.commit()
 
     # Fechar a conexão com o banco de dados
     conexao.close()
