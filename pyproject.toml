@@ -1,5 +1,5 @@
 [tool.poetry]
-name = "csv-to-sql"
+name = "datasaude-script"
 version = "0.1.0"
 description = ""
 authors = ["Cauê Beloni <cbeloni@gmail.com>"]

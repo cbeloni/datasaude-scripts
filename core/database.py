@@ -1,6 +1,6 @@
 from dotenv import load_dotenv, dotenv_values
 import mysql.connector
-from log_config import Log
+from core.log_config import Log
 
 _log = Log("database")
 
