@@ -11,6 +11,7 @@ python = "^3.11"
 mysql-connector-python = "^8.0.33"
 pandas = "^2.0.2"
 python-dotenv = "^1.0.0"
+requests = "^2.31.0"
 
 
 [build-system]
