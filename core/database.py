@@ -1,5 +1,6 @@
 from dotenv import load_dotenv, dotenv_values
 import mysql.connector
+
 from core.log_config import Log
 
 _log = Log("database")
@@ -9,8 +10,17 @@ _config = dotenv_values(".env")
 
 
 # Função para criar a conexão com o banco de dados
-def criar_conexao():
+def criar_conexao(config=None):
+    global _config
+
+    if not _config and not config:
+        raise ValueError("É necessário fornecer um valor para o parâmetro 'config'")
+
+    if not _config:
+        _config = config
+
     _log.info(f"Abrindo conexão para: {_config}")
+
     return mysql.connector.connect(
         host=_config['host'],
         user=_config['user'],
