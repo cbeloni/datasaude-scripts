@@ -67,3 +67,4 @@ class CestebConsuilta:
         with open(f"files/{nome_arquivo}", "w") as arquivo:
             # Grava o texto no arquivo
             arquivo.write(response.text)
+
