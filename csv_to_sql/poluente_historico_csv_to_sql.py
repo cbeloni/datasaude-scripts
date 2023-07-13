@@ -10,7 +10,7 @@ _log = Log("poluente_historico")
 
 create_all()
 
-def read_csv(arquivo: str):
+def csv_to_sql(arquivo: str):
     _log.info("Starting poluente historico")
     dados_csv = pd.read_csv(arquivo)
 
@@ -65,4 +65,4 @@ def read_csv(arquivo: str):
     sessionSqlite.close()
 
 if __name__ == '__main__':
-    read_csv("FILES_CETESB/2022_csv/01012022_01012023_63_63.html.csv")
+    csv_to_sql("/home/caue/Documentos/FILES_CETESB/2022_csv/01012022_01012023_63_63.html.csv")

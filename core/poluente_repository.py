@@ -24,3 +24,19 @@ def get_poluente_scrap_pendentes(data_inicial: str = '2022-01-01 00:00:00', stat
     _conexao.close()
     return resultados
 
+def update_poluente_scrap(id, message) -> bool:
+    _log.info(f"Atualizando processamento id: {id}")
+    _conexao = criar_conexao(_config)
+    cursor = _conexao.cursor()
+    query = "UPDATE poluente_scrap SET file = %s, status = %s, updated_at=now() WHERE id = %s"
+    cursor.execute(query, (message, id))
+    _conexao.commit()
+    cursor.close()
+    _conexao.close()
+
+if __name__ == '__main__':
+    resultados = get_poluente_scrap_pendentes('2022-01-01 00:00:00', 'PARSED')
+    for resultado in resultados:
+        id, i_rede, data_inicial, data_final, i_tipo_dado, estacao, parametro, created_at, updated_at, file = resultado
+        _log.info(f'estacao: {estacao} - file: {file}')
+
