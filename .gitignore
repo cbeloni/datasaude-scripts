@@ -4,3 +4,12 @@
 venv/
 PESQUISA_J00_ao_J99_2022_2023_Completo.csv
 /.venv/
+/scraping_cetesb/files/01012022_01012023_63_63.csv
+/scraping_cetesb/files/01012022_01012023_63_63.html
+/scraping_cetesb/files/01012022_01012023_64_12.html
+/scraping_cetesb/files/01012022_01012023_64_63.html
+/scraping_cetesb/files/congonhas_Monóxido de carbono.xlsx
+/scraping_cetesb/db1.sqlite
+/scraping_cetesb/files/ibirapuera_Monóxido de carbono.csv
+/scraping_cetesb/files/ibirapuera_Monóxido de carbono.html
+/scraping_cetesb/files/ibirapuera_Monóxido de carbono.xlsx

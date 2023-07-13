@@ -7,7 +7,9 @@ BaseSqlite = declarative_base()
 db1_url = 'sqlite:///db1.sqlite'
 engineSqlite = create_engine(db1_url)
 SessionSqlite = sessionmaker(bind=engineSqlite)
-sessionSqlite = SessionSqlite()
 
 def create_all():
     BaseSqlite.metadata.create_all(engineSqlite)
+
+if __name__ == '__main__':
+    create_all()

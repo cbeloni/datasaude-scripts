@@ -2,6 +2,7 @@ from bs4 import BeautifulSoup
 import pandas as pd
 from core.log_config import Log
 _log = Log("parse_table_csv")
+
 def html_to_csv(html_file, csv_file):
     with open(html_file, 'r') as file:
         html_content = file.read()
