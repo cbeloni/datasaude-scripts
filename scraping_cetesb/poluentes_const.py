@@ -101,6 +101,23 @@ estacoes_grande_sp = [
     'S.Bernardo-Centro',
     'São Caetano do Sul',
     'Taboão da Serra',
+    'Santo Amaro',
+    'Carapicuíba',
+    'Cubatão-Centro',
+    'Grajaú-Parelheiros',
+    'Osasco',
+    'Perus',
+    'Pinheiros',
+]
+
+estacoes_pendentes = [
+    'Santo Amaro',
+    'Carapicuíba',
+    'Cubatão-Centro',
+    'Grajaú-Parelheiros',
+    'Osasco',
+    'Perus',
+    'Pinheiros',
 ]
 
 poluentes = {

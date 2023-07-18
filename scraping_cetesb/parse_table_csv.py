@@ -1,6 +1,8 @@
 from bs4 import BeautifulSoup
 import pandas as pd
 from core.log_config import Log
+from core.poluente_repository import get_poluente_scrap_pendentes, update_poluente_scrap_finish
+
 _log = Log("parse_table_csv")
 
 def html_to_csv(html_file, csv_file):
@@ -65,6 +67,13 @@ def sanitizar_body(value):
     return value.replace('\n', '').replace('\t', '')
 
 if __name__ == '__main__':
-    html_file = 'files/01012022_01012023_63_63.html'
-    csv_file = 'files/01012022_01012023_63_63.csv'
-    html_to_csv(html_file, csv_file)
+    # html_file = 'files/01012022_01012023_63_63.html'
+    # csv_file = 'files/01012022_01012023_63_63.csv'
+    # html_to_csv(html_file, csv_file)
+    for i in get_poluente_scrap_pendentes():
+        id, i_rede, data_inicial, data_final, i_tipo_dado, estacao, parametro, created_at, updated_at, file = i
+        _log.info(f"Gerando: files/{ file }")
+        html_file = f"files/{ file }"
+        csv_file = f"files/{ file }.csv"
+        html_to_csv(html_file, csv_file)
+        update_poluente_scrap_finish(id, 'PARSED', file)
