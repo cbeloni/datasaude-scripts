@@ -1,5 +1,7 @@
 from core.log_config import Log
+from csv_to_sql.poluente_historico_csv_to_sql import run_csv_to_sql
 from scraping_cetesb.api import CestebConsuilta
+from scraping_cetesb.parse_table_csv import parse_table_to_csv
 from scraping_cetesb.popula_poluente_scrap_table import PopulaPoluenteScrap
 import time
 
@@ -40,10 +42,13 @@ if __name__ == '__main__':
     while True:
         try:
             main()
+            parse_table_to_csv()
+            run_csv_to_sql()
         except Exception as e:
             _log.error(f"Ocorreu um erro: {str(e)}")
 
-        # Aguarda 30 minutos
-        time.sleep(30 * 60)
+        _log.error(f"Aguardando...")
+        # Aguarda 1 minuto
+        time.sleep(1 * 60)
 
 
