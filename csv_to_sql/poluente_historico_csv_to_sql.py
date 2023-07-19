@@ -65,15 +65,18 @@ def csv_to_sql(arquivo: str):
 
     sessionSqlite.close()
 
-if __name__ == '__main__':
-    for i in get_poluente_scrap_pendentes(status = 'PARSED'):
+def run_csv_to_sql():
+    for i in get_poluente_scrap_pendentes(status='PARSED'):
         id, i_rede, data_inicial, data_final, i_tipo_dado, estacao, parametro, created_at, updated_at, file = i
-        _log.info(f"Inserindo: files/{ file }")
-        csv_file = f"~/Documentos/FILES_CETESB/2022_csv/{ file }.csv"
+        _log.info(f"Inserindo: files/{file}")
+        csv_file = f"files/{file}.csv"
         try:
             csv_to_sql(csv_file)
             update_poluente_scrap_finish(id, 'FINALIZADO', file)
         except Exception as ex:
             _log.error(f"Error: {ex}")
+
+if __name__ == '__main__':
+    run_csv_to_sql()
 
     # csv_to_sql("/home/caue/Documentos/FILES_CETESB/2022_csv/01012022_01012023_63_63.html.csv")
