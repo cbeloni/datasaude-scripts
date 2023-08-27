@@ -19,8 +19,15 @@ def listar(bucket_name: str):
     if 'Contents' in response:
         for obj in response['Contents']:
             print(obj['Key'])
+            remover('maps-pub', obj['Key'])
     else:
         print('O bucket está vazio.')
+        
+def remover(bucket_name: str, key: str):
+    bucket_name = bucket_name
+    object_key = key
+
+    return _s3_client.delete_object(Bucket=bucket_name, Key=object_key)
 
 if __name__ == '__main__':
     enviar('maps-pub',
@@ -30,4 +37,7 @@ if __name__ == '__main__':
     print('Arquivo enviado com sucesso!')
 
     listar('maps-pub')
+    
+    resultado = remover('maps-pub', "2022_mp10_2_1.png")
+    print("Remoção com sucesso")
 
