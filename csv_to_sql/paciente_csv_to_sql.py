@@ -1,11 +1,14 @@
 import pandas as pd
 import mysql.connector
-
+import sqlite3
+from faker import Faker
 from dotenv import load_dotenv, dotenv_values
 
 load_dotenv()
 
 _config = dotenv_values(".env")
+
+_fake = Faker()
 
 # Função para criar a conexão com o banco de dados
 def criar_conexao():
@@ -17,16 +20,20 @@ def criar_conexao():
         ssl_ca= _config['ssl_ca'] if 'ssl_ca' in _config else None
     )
 
+def criar_conexao_sqlite():
+    return sqlite3.connect('csv_to_sql/db1.sqlite')
+
 def run():
     print('executando')
     # Ler o arquivo CSV
-    dados_csv = pd.read_csv('PESQUISA_J00_ao_J99_2022_2023_Completo.csv')
+    dados_csv = pd.read_csv('dados_pacientes_completo.csv',
+                            encoding='iso-8859-1')
 
     # Criar a conexão com o banco de dados
-    conexao = criar_conexao()
+    conexao = criar_conexao_sqlite()
 
     # Criar o cursor para executar as consultas SQL
-    cursor = conexao.cursor()
+    cursor = conexao.cursor()    
 
     # Iterar sobre cada linha do CSV e inserir os dados na tabela 'paciente'
     for indice, linha in dados_csv.iterrows():
@@ -45,25 +52,21 @@ def run():
         nr_endereco = linha['NR_ENDERECO'] if pd.notnull(linha['NR_ENDERECO']) else None
         nm_bairro = linha['NM_BAIRRO'] if pd.notnull(linha['NM_BAIRRO']) else None
         nr_cep = linha['NR_CEP'] if pd.notnull(linha['NR_CEP']) else None
-        
-        # Montar a consulta SQL de inserção
+
         sql = """
             INSERT INTO paciente (CD_ATENDIMENTO, DT_ATENDIMENTO, TP_ATENDIMENTO, DS_ORI_ATE, DS_LEITO, DT_PREVISTA_ALTA, DT_ALTA,
-            CD_SGRU_CID, CD_CID, DS_CID, SN_INTERNADO, DS_ENDERECO, NR_ENDERECO, NM_BAIRRO, NR_CEP)
-            VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+            CD_SGRU_CID, CD_CID, DS_CID, SN_INTERNADO, DS_ENDERECO, NR_ENDERECO, NM_BAIRRO, NR_CEP, NM_PACIENTE)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
         try:
             # Executar a consulta SQL
-            cursor.execute(sql, (cd_atendimento, dt_atendimento, tp_atendimento, ds_ori_ate, ds_leito, dt_prevista_alta, dt_alta,
-                                cd_sgru_cid, cd_cid, ds_cid, sn_internado, ds_endereco, nr_endereco, nm_bairro, nr_cep))
-            
-            # Confirmar as alterações no banco de dados
+            cursor.execute(sql, (cd_atendimento, dt_atendimento, tp_atendimento,
+                                 ds_ori_ate, ds_leito, dt_prevista_alta, dt_alta,
+                                 cd_sgru_cid, cd_cid, ds_cid, sn_internado, ds_endereco,
+                                 nr_endereco, nm_bairro, nr_cep, _fake.name()))
             conexao.commit()
-        except Exception as e:
-            print('except: {}', e)
-        
-
-    # Fechar a conexão com o banco de dados
+        except Exception as exception:
+            print('error o except: {}', exception)
     conexao.close()
 
 if __name__ == '__main__':
