@@ -1,18 +1,32 @@
 # 1. First steps in R:# 
 ## 1.1 - We start by cleaning R environment ##
+##install.packages("readxl")
+##install.packages("remotes")
+##install.packages("RSQLite")
+##install.packages("dplyr")
+#install.packages("gstat")
+install.packages("brewer")
+install.packages("RColorBrewer")
+
+
+library(RSQLite)           # Carrega o pacote RSQLite
+library(readxl)
+library(dplyr)
+library(remotes)
+#install_github("r-spatial/sf")
+library(sf)
+library(gstat)
+library(brewer)
+library(RColorBrewer)
+
+
 rm(list = ls())
 gc(reset=T)
 graphics.off()
 data_med = '2022-05-24'
 
 #install.packages("RSQLite")  # Instala o pacote RSQLite, se ainda não estiver instalado
-library(RSQLite)           # Carrega o pacote RSQLite
-library(readxl)
-library(dplyr)
-library(remotes)
-install_github("r-spatial/sf")
-library(sf)
-
+#library(RSQLite)           # Carrega o pacote RSQLite
 
 ## 1.2 - And install required packages
 
@@ -22,6 +36,7 @@ pacman::p_load(gstat, raster, rstudioapi, sp, sf, spacetime, rgdal, RColorBrewer
 
 ## 1.4 - Loading data: our data is already free of outliers; we strongly recommend data preprocessing prior to interpolation
 
+
 data = estacoes_mp10 <- read_xlsx("/home/caue/Documentos/pensi_projeto/datasaude-scripts/R/geolocalizacao_estacoes_lat_long.xlsx")
 
 # Carregar dados
@@ -29,6 +44,10 @@ con <- dbConnect(SQLite(), dbname = "/home/caue/Documentos/pensi_projeto/datasau
 poluente_media <- dbGetQuery(con, "SELECT * FROM poluente_historico")%>% mutate(data_medicao = as.Date(data))
 tabelas <- dbListTables(con)
 dbDisconnect(con)
+
+pol.dias <- poluente_media %>% group_by(nome_parametro, data_medicao)%>%
+  summarise(media_dia=mean(media_horaria),
+            .groups = 'drop')
 
 mp10 <- poluente_media %>%filter(nome_parametro=='MP10 (Partículas Inaláveis)',
                                  data_medicao== data_med)%>% left_join(estacoes_mp10)%>%
@@ -38,10 +57,11 @@ mp10 <- poluente_media %>%filter(nome_parametro=='MP10 (Partículas Inaláveis)'
 
 
 data <- mp10[,c(1,2,4)] #selecting important columns (x, y, z)
-
+data$lat_UTM <- as.numeric(data$lat_UTM)
+data$long_UTM <- as.numeric(data$long_UTM)
 names(data) <- c("x", "y", "z")
 
-# sp::coordinates(data) = ~x+y # transform data to spatial object (x and y must be in UTM)
+sp::coordinates(data) = ~x+y # transform data to spatial object (x and y must be in UTM)
 
 
 ## 1.5 - We separate the primary variable. This will facilitate analysis
@@ -57,7 +77,7 @@ sp::bubble(data, "z", col = "red")
 
 ## 4.1 - We create a grid for interpolation
 
-contorno <- shapefile("/home/caue/Documentos/pensi_projeto/datasaude-scripts/R/UTM_Limites_RMSP.shp")
+contorno <- shapefile("/home/caue/Documentos/pensi_projeto/QGIS/Interpolação/contorno_sha.shp")
 
 #And then we create a grid
 
@@ -80,14 +100,18 @@ proj4string(mapaRaster) = proj4string(contorno)
 ## 4.2 - Exporting the map
 
 writeRaster(mapaRaster, 
-            filename = 'interpolated_idw.tif',#here we choose where we want to save
+            filename = '/home/caue/Documentos/pensi_projeto/datasaude-scripts/R/interpolated_idw.tif',#here we choose where we want to save
             format = 'GTiff',
             overwrite = T)
 
 ###IDW
 ###Inverso da distancia
+par(mar = c(1, 1, 1, 1))
 pontos <- st_as_sf(mp10, coords = c("long_UTM", "lat_UTM"), crs = 31983)
+modelo_raster <- raster('/home/caue/Documentos/pensi_projeto/datasaude-scripts/R/interpolated_idw.tif', values = FALSE)
 st_crs(pontos) <- crs(modelo_raster)
+sp <- st_read("/home/caue/Documentos/pensi_projeto/datasaude-scripts/R/UTM_Limites_RMSP/UTM_Limites_RMSP.shp")
+st_crs(sp) <- 31983
 gs_idw_2 <- gstat(formula = media_dia~1, locations = pontos, set = list(idp=3))
 interpolacao_idw <- interpolate(modelo_raster, gs_idw_2)
 num_intervals <- 10
@@ -96,80 +120,4 @@ plot(interpolacao_idw, col = interval_colors, col.regions = interval_colors, mai
 plot(st_geometry(sp), add = TRUE)
 
 
-
-cv_idw_2<-gstat.cv(gs_idw_2)
-resultados<-(as.data.frame(cv_idw_2))
-sqrt(mean(cv_idw_2$residual^2))
-1-(var(cv_idw_2$residual)/var(cv_idw_2$observed))
-
-modelo_raster <- raster('interpolated_idw.tif', values = FALSE)
-st_crs(pontos) <- crs(modelo_raster)
-
-interpolacao_idw <- interpolate(modelo_raster, gs_idw_2)
-
-
-gs_idw_2$data
-
-num_intervals <- 10
-interval_colors <- brewer.pal(num_intervals, "Oranges")
-plot(interpolacao_idw, col = interval_colors, col.regions = interval_colors, main = data_med)
-plot(st_geometry(sp), add = TRUE)
-
-interpolacao_idw@data
-teste@data
-
-
-
-sp <- st_read("Mun_RMSP_UTM.shp")
-st_crs(sp) <- 31983
-
-
-plot(teste)
-plot(st(geometry(modelo_raster), add = TRUE))
-plot(teste, main = "MP10 - Data: 2022-12-25")
-plot(st_geometry(sp), add = TRUE)
-
-num_intervals <- 10
-interval_colors <- brewer.pal(num_intervals, "Oranges")
-plot(teste, col = interval_colors, col.regions = interval_colors, main = "MP10 - Data: 2022-12-25")
-plot(st_geometry(sp), add = TRUE)
-
-
-display.brewer.all()
-
-
-plot(sp)
-sp <- st_read("Mun_RMSP_UTM.shp")
-st_crs(sp) <- 31983
-
-
-estacoes <- st_read(mp10)
-tm_shape(pontos) + tm_dots(col = 'media_dia', pal = "red")+
-  tm_shape(contorno) + tm_borders(col = 'black')
-
-
-
-pontos <- st_as_sf(mp10, coords = c("long_UTM", "lat_UTM"), crs = 31983)
-
-estacoes_1 <- st_as_sf(sp, coords = c("long_UTM", "lat_UTM"), crs = 31983)
-
-plot(mp10)
-
-proj4string(modelo_raster)
-proj4string(pontos)
-
-
-library('fields')
-modelo_tps <- Tps(x=st_coordinates(pontos), Y=pontos$media_dia)
-sqrt(mean(modelo_tps$residuals^2))
-1-(var(modelo_tps$residuals)/var(pontos$media_dia))
-modelo_tps$fitted.values
-mp10_spline <- interpolate(modelo_raster, modelo_tps)
-plot(mp10_spline)
-plot(st_geometry(sp), add = TRUE)
-
-
-# CONVERTER UM DATA FRAME EM SHAPEFILE
-meu_sf <- st_as_sf(mp10, coords = c("long_UTM", "lat_UTM"), crs = 31983)
-write_sf(meu_sf, file.path(caminho_do_arquivo, "nome_do_shapefile.shp"))
 
