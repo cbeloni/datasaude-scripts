@@ -84,7 +84,7 @@ def gera_geotif():
 
     plt.show()
 
-def interpolar(amostra_file, contorno_file):
+def interpolar(amostra_file, campo_amostra, contorno_file):
     readings, canvas = ler_fontes(amostra_file, contorno_file)
 
     km_c = 10 ** 3
@@ -122,7 +122,7 @@ def interpolar(amostra_file, contorno_file):
 
 
 if __name__ == '__main__':
-    df = interpolar('amostra/amostra_2023_mp10.csv', 'contorno/hexgrid_v2.shp')
+    df = interpolar('amostra/amostra_2023_mp10.csv', 'media_mp10', 'contorno/hexgrid_v2.shp')
 
     # output_file = "output/shapefile"
     # df.to_file(output_file)
