@@ -118,13 +118,14 @@ def interpolar(amostra_file, contorno_file):
 
     plt.tight_layout()
     plt.show()
-    # output_file = "output/shapefile"
-    # df.to_file(output_file)
     return df
 
 
 if __name__ == '__main__':
     df = interpolar('amostra/amostra_2023_mp10.csv', 'contorno/hexgrid_v2.shp')
+
+    # output_file = "output/shapefile"
+    # df.to_file(output_file)
 
     geo_json_output_path = "output/mapa_poluentes.geojson"
     df.to_file(geo_json_output_path, driver="GeoJSON")
