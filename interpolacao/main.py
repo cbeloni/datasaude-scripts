@@ -9,7 +9,7 @@ import rasterio
 from rasterio import features
 from rasterio.transform import from_origin
 
-readings = pd.read_csv('amostra_2023_csv.csv', index_col='id')
+readings = pd.read_csv('amostra/amostra_2023_mp10.csv', index_col='id')
 canvas = gpd.read_file('contorno/hexgrid_v2.shp')
 canvas['points'] = canvas.centroid
 
@@ -58,13 +58,12 @@ plt.show()
 # output_file = "output/shapefile"
 # df.to_file(output_file)
 
-df.to_file("output/mapa_poluentes.geojson", driver="GeoJSON")
+geo_json_output_path = "output/mapa_poluentes.geojson"
+df.to_file(geo_json_output_path, driver="GeoJSON")
 
-
-file_path = "output/mapa_poluentes.geojson"
-output_filename = 'output/output_image.png'
+output_png_path = 'output/mapa_poluente_mp_10.png'
 def gera_png():
-    gdf = gpd.read_file(file_path)
+    gdf = gpd.read_file(geo_json_output_path)
     colors = ['#008000', '#FFFF00', '#FFA500', '#FF0000', '#800080']
     cmap = ListedColormap(colors)
     fig, ax = plt.subplots(figsize=(10, 10))
@@ -73,21 +72,21 @@ def gera_png():
     ax.set_ylim(df.geometry.total_bounds[1], df.geometry.total_bounds[3])
     gdf.plot(column='yhat', ax=ax, legend=False, cmap=cmap, vmin=10, vmax=50)
     plt.tight_layout()
-    plt.savefig(output_filename, dpi=300, bbox_inches='tight', pad_inches=0.1)
-    print(f'Imagem salva em {output_filename}')
+    plt.savefig(output_png_path, dpi=300, bbox_inches='tight', pad_inches=0.1)
+    print(f'Imagem salva em {output_png_path}')
 # salvar em png a partir do geojson
-# gera_png()
+gera_png()
 
-output_filename_trans = 'output/output_image_trans.png'
+output_filename_transparente = 'output/mapa_poluente_mp_10_transparente.png'
 def gera_transparencia():
-    imagem_png = Image.open(output_filename)
+    imagem_png = Image.open(output_png_path)
 
     transparencia = 255  # # transparência restante em 100%
     mascara_transparencia = imagem_png.convert("L").point(
         lambda p: p < transparencia and 190)  # transparência parte branca em 50%
     imagem_png.putalpha(mascara_transparencia)
 
-    imagem_png.save(output_filename_trans)
+    imagem_png.save(output_filename_transparente)
     imagem_png.close()
 
 gera_transparencia()
@@ -127,4 +126,3 @@ def gera_geotif():
 
     plt.show()
 
-# gera_geotif()
