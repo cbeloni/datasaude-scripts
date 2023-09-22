@@ -31,13 +31,13 @@ def remover(bucket_name: str, key: str):
 
 if __name__ == '__main__':
     enviar('maps-pub',
-           '/home/caue/Documentos/pensi_projeto/datasaude-app/public/2022_mp10_2_1.png',
+           '/home/caue/Imagens/mapa/arquivo_com_transparencia.png',
            '2022_mp10_2_1.png',
            'image/png')
     print('Arquivo enviado com sucesso!')
 
-    listar('maps-pub')
+    # listar('maps-pub')
     
-    resultado = remover('maps-pub', "2022_mp10_2_1.png")
-    print("Remoção com sucesso")
+    # resultado = remover('maps-pub', "2022_mp10_2_1.png")
+    # print("Remoção com sucesso")
 

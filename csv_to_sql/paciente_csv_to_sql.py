@@ -21,13 +21,13 @@ def criar_conexao():
     )
 
 def criar_conexao_sqlite():
-    return sqlite3.connect('csv_to_sql/db1.sqlite')
+    return sqlite3.connect('/home/caue/Documentos/pensi_projeto/POLUENTES_PACIENTES.sqlite')
 
 def run():
     print('executando')
     # Ler o arquivo CSV
-    dados_csv = pd.read_csv('dados_pacientes_completo.csv',
-                            encoding='iso-8859-1')
+    dados_csv = pd.read_csv('/home/caue/Documentos/pensi_projeto/Select2_PESQUISA_J00_ao_J99.csv',
+                            encoding='iso-8859-1', on_bad_lines='skip')
 
     # Criar a conexão com o banco de dados
     conexao = criar_conexao_sqlite()
@@ -52,18 +52,21 @@ def run():
         nr_endereco = linha['NR_ENDERECO'] if pd.notnull(linha['NR_ENDERECO']) else None
         nm_bairro = linha['NM_BAIRRO'] if pd.notnull(linha['NM_BAIRRO']) else None
         nr_cep = linha['NR_CEP'] if pd.notnull(linha['NR_CEP']) else None
+        dt_nasc = linha['DT_NASC'] if pd.notnull(linha['DT_NASC']) else None
+        idade = linha['IDADE'] if pd.notnull(linha['IDADE']) else None
+        tp_sexo = linha['TP_SEXO'] if pd.notnull(linha['TP_SEXO']) else None
 
         sql = """
             INSERT INTO paciente (CD_ATENDIMENTO, DT_ATENDIMENTO, TP_ATENDIMENTO, DS_ORI_ATE, DS_LEITO, DT_PREVISTA_ALTA, DT_ALTA,
-            CD_SGRU_CID, CD_CID, DS_CID, SN_INTERNADO, DS_ENDERECO, NR_ENDERECO, NM_BAIRRO, NR_CEP, NM_PACIENTE)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            CD_SGRU_CID, CD_CID, DS_CID, SN_INTERNADO, DS_ENDERECO, NR_ENDERECO, NM_BAIRRO, NR_CEP, NM_PACIENTE, DT_NASC, IDADE, TP_SEXO)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         """
         try:
             # Executar a consulta SQL
             cursor.execute(sql, (cd_atendimento, dt_atendimento, tp_atendimento,
                                  ds_ori_ate, ds_leito, dt_prevista_alta, dt_alta,
                                  cd_sgru_cid, cd_cid, ds_cid, sn_internado, ds_endereco,
-                                 nr_endereco, nm_bairro, nr_cep, _fake.name()))
+                                 nr_endereco, nm_bairro, nr_cep, _fake.name(), dt_nasc, idade, tp_sexo))
             conexao.commit()
         except Exception as exception:
             print('error o except: {}', exception)

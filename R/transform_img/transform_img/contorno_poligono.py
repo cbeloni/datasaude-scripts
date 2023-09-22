@@ -9,7 +9,7 @@ gdf = gpd.read_file(geojson_file)
 polygon = gdf.geometry.iloc[0]
 
 # Carregue a imagem TIFF
-tiff_file = 'mp10_discreto_sem_transparencia.tif'
+tiff_file = 'Ozônio_epsg29193.tif'
 with rasterio.open(tiff_file) as src:
     image = src.read()
     transform = src.transform
@@ -23,7 +23,7 @@ image_masked = image.copy()
 image_masked[:, ~mask] = 255  # Define pixels fora do polígono como zero
 
 # Salve a imagem resultante em um novo arquivo TIFF
-output_tiff_file = 'imagem_com_contorno_v2.tif'
+output_tiff_file = 'imagem_com_contorno_v3.tif'
 with rasterio.open(output_tiff_file, 'w', **profile) as dst:
     dst.write(image_masked)
 
