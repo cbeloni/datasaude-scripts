@@ -1,7 +1,7 @@
 from dotenv import load_dotenv, dotenv_values
 
 from core.database import criar_conexao
-from core.log_config import Log
+from config.log_config import Log
 
 load_dotenv()
 _config = dotenv_values("../.env")

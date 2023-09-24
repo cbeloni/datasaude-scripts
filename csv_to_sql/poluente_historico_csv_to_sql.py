@@ -4,7 +4,7 @@ import pandas as pd
 
 from core import PoluenteHistorico
 from core.database_sqlite import SessionSqlite, create_all
-from core.log_config import Log
+from config.log_config import Log
 from core.poluente_repository import update_poluente_scrap_finish, get_poluente_scrap_pendentes
 
 _log = Log("poluente_historico")

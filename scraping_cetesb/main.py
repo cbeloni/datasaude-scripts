@@ -1,4 +1,4 @@
-from core.log_config import Log
+from config.log_config import Log
 from csv_to_sql.poluente_historico_csv_to_sql import run_csv_to_sql
 from scraping_cetesb.api import CestebConsuilta
 from scraping_cetesb.parse_table_csv import parse_table_to_csv

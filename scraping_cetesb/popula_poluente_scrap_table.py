@@ -1,6 +1,6 @@
 from poluentes_const import estacoes_grande_sp, estacoes, poluentes, poluentes_analisados
 from core.database import criar_conexao
-from core.log_config import Log
+from config.log_config import Log
 from datetime import datetime
 
 _log = Log("popula_poluente_scrap_table")

@@ -1,6 +1,6 @@
 from bs4 import BeautifulSoup
 import pandas as pd
-from core.log_config import Log
+from config.log_config import Log
 from core.poluente_repository import get_poluente_scrap_pendentes, update_poluente_scrap_finish
 
 _log = Log("parse_table_csv")

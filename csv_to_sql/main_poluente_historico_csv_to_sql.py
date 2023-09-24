@@ -1,6 +1,6 @@
 from core.poluente_repository import get_poluente_scrap_pendentes
 from poluente_historico_csv_to_sql import csv_to_sql
-from core.log_config import Log
+from config.log_config import Log
 
 _log = Log("main_poluente_historico_csv_to_sql")
 
