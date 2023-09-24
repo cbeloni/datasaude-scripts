@@ -37,7 +37,7 @@ def gera_png(geo_json_output_path, output_png_path, campo):
     ax.set_ylim(df.geometry.total_bounds[1], df.geometry.total_bounds[3])
     gdf.plot(column=campo, ax=ax, legend=False, cmap=cmap, vmin=10, vmax=50)
     plt.tight_layout()
-    plt.savefig(output_png_path, dpi=300, bbox_inches='tight', pad_inches=0.1)
+    plt.savefig(output_png_path, dpi=100, bbox_inches='tight', pad_inches=0.1)
     print(f'Imagem salva em {output_png_path}')
 
 def gera_transparencia(output_filename_transparente):
