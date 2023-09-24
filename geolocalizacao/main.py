@@ -30,7 +30,7 @@ def converte_coordenadas_UTM(latitude, longitude):
 
 if __name__ == '__main__':
     for estacao in addresses:
-        latitude, longitude = get_latitude_longetitude(estacao)
+        latitude, longitude = get_latitude_longetitude(f'{estacao["endereco"]},{estacao["municipio"]}')
         x, y = converte_coordenadas_UTM(latitude, longitude)
-        print(f'{estacao};{latitude};{longitude};{x};{y}')
+        print(f'{estacao["endereco"]},{estacao["municipio"]};{estacao["nome"]};{latitude};{longitude};{x};{y}')
         time.sleep(2)
