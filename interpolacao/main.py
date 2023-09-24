@@ -12,7 +12,7 @@ from matplotlib.colors import LinearSegmentedColormap
 
 
 def ler_fontes(amostra_file, contorno_file):
-    readings = pd.read_csv(amostra_file, index_col='id')
+    readings = pd.read_csv(amostra_file, index_col='codigo_estacao')
     canvas = gpd.read_file(contorno_file)
     canvas['points'] = canvas.centroid
     return readings, canvas
