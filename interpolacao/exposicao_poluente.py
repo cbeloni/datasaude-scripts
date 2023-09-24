@@ -22,5 +22,5 @@ if __name__ == '__main__':
     data = '20220101'
     nome_arquivo = f'poluente_{poluente}_{data}'
     arquivo_geojson = f'output/{nome_arquivo}.geojson'
-    indice = indice_poluente_por_utm(319367, 7384421, arquivo_geojson)
+    indice = indice_poluente_por_utm(324480.5080984961, 7383606.510285771, arquivo_geojson)
     _log.info(f"O valor de exposição do poluente para o ponto UTM é: {indice}")

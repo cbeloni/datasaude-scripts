@@ -8,6 +8,7 @@ from matplotlib.colors import ListedColormap
 import rasterio
 from rasterio import features
 from rasterio.transform import from_origin
+from matplotlib.colors import LinearSegmentedColormap
 
 
 def ler_fontes(amostra_file, contorno_file):
@@ -28,7 +29,8 @@ def idw_apply(x, known, nn=-1, power=1):
 def gera_png(geo_json_output_path, output_png_path):
     gdf = gpd.read_file(geo_json_output_path)
     colors = ['#008000', '#FFFF00', '#FFA500', '#FF0000', '#800080']
-    cmap = ListedColormap(colors)
+    #cmap = ListedColormap(colors)
+    cmap = LinearSegmentedColormap.from_list('custom_colormap', colors, N=256)
     fig, ax = plt.subplots(figsize=(10, 10))
     ax.set_axis_off()
     ax.set_xlim(df.geometry.total_bounds[0], df.geometry.total_bounds[2])
@@ -107,7 +109,8 @@ def interpolar(amostra_file, campo_amostra, contorno_file, vmin, vmax):
     predicted.columns = ['coordinates', 'yhat']
 
     colors = ['#008000', '#FFFF00', '#FFA500', '#FF0000', '#800080']
-    cmap = ListedColormap(colors)
+    #cmap = ListedColormap(colors)
+    cmap = LinearSegmentedColormap.from_list('custom_colormap', colors, N=256)
 
     df = canvas.join(predicted)
     df = df[['geometry', 'yhat']]
