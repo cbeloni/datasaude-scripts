@@ -8,7 +8,7 @@ _log = Log("exposicao_poluente")
 def indice_poluente_por_utm(x, y, arquivo_geojson):
     point_utm = Point(x, y)
 
-    gdf = gpd.read_file(f'output/{nome_arquivo}.geojson')
+    gdf = gpd.read_file(arquivo_geojson)
     result = gdf.contains(point_utm)
 
     if result.any():
