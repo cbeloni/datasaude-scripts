@@ -16,7 +16,7 @@ def ler_fontes(amostra_file, contorno_file):
     canvas['points'] = canvas.centroid
     return readings, canvas
 
-def plotar_amostra(garr):
+def plotar_amostra(garr,ax):
     garr.set_geometry = 'geometry'
     garr.plot(ax=ax, column=0, legend=False, vmin=10, vmax=50, cmap='coolwarm')
     plt.show()
@@ -25,7 +25,7 @@ def idw_apply(x, known, nn=-1, power=1):
     pred = inverse_distance_weighting(known, np.array([x.x, x.y]), nn, power)
     return pd.Series([x, pred])
 
-def gera_png(geo_json_output_path):
+def gera_png(geo_json_output_path, output_png_path):
     gdf = gpd.read_file(geo_json_output_path)
     colors = ['#008000', '#FFFF00', '#FFA500', '#FF0000', '#800080']
     cmap = ListedColormap(colors)
@@ -41,9 +41,9 @@ def gera_png(geo_json_output_path):
 def gera_transparencia(output_filename_transparente):
     imagem_png = Image.open(output_png_path)
 
-    transparencia = 255  # # transparência restante em 100%
+    transparencia = 255  # transparência parte branca em 100%
     mascara_transparencia = imagem_png.convert("L").point(
-        lambda p: p < transparencia and 190)  # transparência parte branca em 50%
+        lambda p: p < transparencia and 190)  # transparência restante em 50%
     imagem_png.putalpha(mascara_transparencia)
 
     imagem_png.save(output_filename_transparente)
@@ -84,12 +84,11 @@ def gera_geotif():
 
     plt.show()
 
-def interpolar(amostra_file, campo_amostra, contorno_file):
+def interpolar(amostra_file, campo_amostra, contorno_file, vmin, vmax):
     readings, canvas = ler_fontes(amostra_file, contorno_file)
 
-    km_c = 10 ** 3
     POWER = 3
-    READING = 'media_mp10'
+    READING = campo_amostra
     sample = readings[['x', 'y', READING]]
     arr = sample.dropna().values
     arr[:3]
@@ -101,7 +100,7 @@ def interpolar(amostra_file, campo_amostra, contorno_file):
 
     fig, ax = plt.subplots(figsize=(10, 10))
 
-    # plotar_amostra(garr)
+    # plotar_amostra(garr, ax)
 
     # Predict
     predicted = canvas['points'].apply(idw_apply, known=arr, power=POWER)
@@ -110,11 +109,10 @@ def interpolar(amostra_file, campo_amostra, contorno_file):
     colors = ['#008000', '#FFFF00', '#FFA500', '#FF0000', '#800080']
     cmap = ListedColormap(colors)
 
-    # Merge with canvas
     df = canvas.join(predicted)
     df = df[['geometry', 'yhat']]
     ax.set_axis_off()
-    ax = df.plot(column='yhat', legend=False, vmin=10, vmax=50, figsize=(10, 10), cmap=cmap, ax=ax)
+    ax = df.plot(column='yhat', legend=False, vmin=vmin, vmax=vmax, figsize=(10, 10), cmap=cmap, ax=ax)
 
     plt.tight_layout()
     plt.show()
@@ -122,16 +120,25 @@ def interpolar(amostra_file, campo_amostra, contorno_file):
 
 
 if __name__ == '__main__':
-    df = interpolar('amostra/amostra_2023_mp10.csv', 'media_mp10', 'contorno/hexgrid_v2.shp')
+    vmin = 10
+    vmax = 50
+    poluente = 'mp10'
+    data = '20220101'
+    nome_arquivo = f'poluente_{poluente}_{data}'
+    df = interpolar(f'amostra/amostra_{nome_arquivo}.csv',
+                    poluente,
+                    'contorno/hexgrid_v2.shp',
+                    vmin,
+                    vmax)
 
     # output_file = "output/shapefile"
     # df.to_file(output_file)
 
-    geo_json_output_path = "output/mapa_poluentes.geojson"
+    geo_json_output_path = f"output/{nome_arquivo}.geojson"
     df.to_file(geo_json_output_path, driver="GeoJSON")
 
-    output_png_path = 'output/mapa_poluente_mp_10.png'
-    gera_png(geo_json_output_path)
+    output_png_path = f'output/{nome_arquivo}.png'
+    gera_png(geo_json_output_path, output_png_path)
 
-    output_filename_transparente = 'output/mapa_poluente_mp_10_transparente.png'
+    output_filename_transparente = f'output/{nome_arquivo}.png'
     gera_transparencia(output_filename_transparente)
