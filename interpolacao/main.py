@@ -26,7 +26,7 @@ def idw_apply(x, known, nn=-1, power=1):
     pred = inverse_distance_weighting(known, np.array([x.x, x.y]), nn, power)
     return pd.Series([x, pred])
 
-def gera_png(geo_json_output_path, output_png_path):
+def gera_png(geo_json_output_path, output_png_path, campo):
     gdf = gpd.read_file(geo_json_output_path)
     colors = ['#008000', '#FFFF00', '#FFA500', '#FF0000', '#800080']
     #cmap = ListedColormap(colors)
@@ -35,7 +35,7 @@ def gera_png(geo_json_output_path, output_png_path):
     ax.set_axis_off()
     ax.set_xlim(df.geometry.total_bounds[0], df.geometry.total_bounds[2])
     ax.set_ylim(df.geometry.total_bounds[1], df.geometry.total_bounds[3])
-    gdf.plot(column='yhat', ax=ax, legend=False, cmap=cmap, vmin=10, vmax=50)
+    gdf.plot(column=campo, ax=ax, legend=False, cmap=cmap, vmin=10, vmax=50)
     plt.tight_layout()
     plt.savefig(output_png_path, dpi=300, bbox_inches='tight', pad_inches=0.1)
     print(f'Imagem salva em {output_png_path}')
@@ -106,16 +106,16 @@ def interpolar(amostra_file, campo_amostra, contorno_file, vmin, vmax):
 
     # Predict
     predicted = canvas['points'].apply(idw_apply, known=arr, power=POWER)
-    predicted.columns = ['coordinates', 'yhat']
+    predicted.columns = ['coordinates', 'mp10']
 
     colors = ['#008000', '#FFFF00', '#FFA500', '#FF0000', '#800080']
     #cmap = ListedColormap(colors)
     cmap = LinearSegmentedColormap.from_list('custom_colormap', colors, N=256)
 
     df = canvas.join(predicted)
-    df = df[['geometry', 'yhat']]
+    df = df[['geometry', 'mp10']]
     ax.set_axis_off()
-    ax = df.plot(column='yhat', legend=False, vmin=vmin, vmax=vmax, figsize=(10, 10), cmap=cmap, ax=ax)
+    ax = df.plot(column='mp10', legend=False, vmin=vmin, vmax=vmax, figsize=(10, 10), cmap=cmap, ax=ax)
 
     plt.tight_layout()
     plt.show()
@@ -141,7 +141,7 @@ if __name__ == '__main__':
     df.to_file(geo_json_output_path, driver="GeoJSON")
 
     output_png_path = f'output/{nome_arquivo}.png'
-    gera_png(geo_json_output_path, output_png_path)
+    gera_png(geo_json_output_path, output_png_path, poluente)
 
     output_filename_transparente = f'output/{nome_arquivo}.png'
     gera_transparencia(output_filename_transparente)
