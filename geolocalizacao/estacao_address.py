@@ -1,6 +1,6 @@
 addresses = [
         {
-            "endereco" : "Rua Benjamin Constant, 3, Pref. Mun. de Diadema, Vila Diadema",
+            "endereco" : "Rua Benjamin Constant, 3, Vila Diadema",
             "municipio" : "DIADEMA",
             "nome" : "Diadema"
         },

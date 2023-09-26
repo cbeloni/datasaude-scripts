@@ -124,7 +124,7 @@ def interpolar(amostra_file, campo_amostra, contorno_file, vmin, vmax):
 
 if __name__ == '__main__':
     vmin = 10
-    vmax = 50
+    vmax = 45
     poluente = 'mp10'
     data = '20220101'
     nome_arquivo = f'poluente_{poluente}_{data}'
