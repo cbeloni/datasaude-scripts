@@ -4,10 +4,10 @@ CREATE TABLE poluente_plot (
 	poluente TEXT(10),
 	vmin NUMERIC,
 	vmax NUMERIC,
-	escala TEXT,
-	arquivo_geojson INTEGER,
-	arquivo_png INTEGER,
+	arquivo_geojson TEXT,
+	arquivo_escala_fixa_png TEXT,
+	arquivo_escala_movel_png TEXT,
 	data_atual DATE,
 	status TEXT(20)
 );
-CREATE UNIQUE INDEX poluente_plot_data_coleta_IDX ON poluente_plot (data_coleta,poluente,vmin,vmax);
+CREATE UNIQUE INDEX poluente_plot_data_coleta_IDX ON poluente_plot (data_coleta,poluente);
