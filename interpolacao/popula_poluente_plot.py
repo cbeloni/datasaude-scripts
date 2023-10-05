@@ -18,9 +18,6 @@ def popula_poluente_plot(cursor, data_coleta, poluente, vmin, vmax, arquivo_csv,
 
     cursor.connection.commit()
 
-
-
-
 def grava_csv(poluente, data):
     query = """
     select p.nome_estacao, 

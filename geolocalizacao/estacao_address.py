@@ -5,18 +5,18 @@ addresses = [
             "nome" : "Diadema"
         },
         {
-            "endereco" : "Alameda dos Tupiniquins, 1571, E.M.Prof.J.C. da Silva Borges, Planalto Paulista",
-            "municipio" : "SAO PAULO",
+            "endereco" : "Alameda dos Tupiniquins, 1571, Planalto Paulista, 04077-003",
+            "municipio" : "SÃO PAULO",
             "nome" : "Congonhas"
         },
         {
-            "endereco" : "Rua Padre José Maria, 555, Centro Ed. e Esp. Mun. Joerg Brüder, Santo Amaro",
-            "municipio" : "SAO PAULO",
+            "endereco" : "Rua Padre José Maria, 555, Santo Amaro",
+            "municipio" : "SÃO PAULO",
             "nome" : "Santo Amaro"
         },
         {
-            "endereco" : "Av. Santos Dumont, 1019, Parque de Material Aeronáutico, Santana",
-            "municipio" : "SAO PAULO",
+            "endereco" : "Av. Santos Dumont, 1019, Santana",
+            "municipio" : "SÃO PAULO",
             "nome" : "Santana"
         },
         {
@@ -25,48 +25,48 @@ addresses = [
             "nome" : "S.Bernardo-Centro"
         },
         {
-            "endereco" : "Av. Prof. Frederico Herman Júnior, 345, CETESB, Alto de Pinheiros",
-            "municipio" : "SAO PAULO",
+            "endereco" : "Av. Prof. Frederico Herman Júnior, 345, Alto de Pinheiros",
+            "municipio" : "SÃO PAULO",
             "nome" : "Pinheiros"
         },
         {
             "endereco" : "Estrada São Paulo-Jundiaí, 1666, Perus",
-            "municipio" : "SAO PAULO",
+            "municipio" : "SÃO PAULO",
             "nome" : "Perus"
         },
         {
-            "endereco" : "Rua Bresser, 2341, Centro Esportivo Municipal – Subprefeitura da Moóca, Moóca",
-            "municipio" : "SAO PAULO",
+            "endereco" : "Rua Bresser, 2341, Centro Esportivo Municipal – Moóca",
+            "municipio" : "SÃO PAULO",
             "nome" : "Mooca"
         },
         {
-            "endereco" : "Av. Fernando do Espírito Santo Alves de Mattos, 1000, SESC Itaquera, Prq do Carmo",
-            "municipio" : "SAO PAULO",
+            "endereco" : "Av. Fernando do Espírito Santo Alves de Mattos, 1000, Prq do Carmo",
+            "municipio" : "SÃO PAULO",
             "nome" : "Itaquera"
         },
         {
-            "endereco" : "Rua Jaguar, 225, Bibl. Mun. Vicente Paulo Guimarães, Vila Curuçá",
-            "municipio" : "SAO PAULO",
+            "endereco" : "Rua Jaguar, 225, Vila Curuçá",
+            "municipio" : "SÃO PAULO",
             "nome" : "Itaim Paulista"
         },
         {
             "endereco" : "Rua Domingas Galleteri Blotta, 171, Jd Santa Cruz",
-            "municipio" : "SAO PAULO",
+            "municipio" : "SÃO PAULO",
             "nome" : "Interlagos"
         },
         {
-            "endereco" : "Parque do Ibirapuera, s\/nº, Setor 25, Prq Ibirapuera",
-            "municipio" : "SAO PAULO",
+            "endereco" : "Parque do Ibirapuera, s/nº, Prq Ibirapuera",
+            "municipio" : "SÃO PAULO",
             "nome" : "Ibirapuera"
         },
         {
-            "endereco" : "Rua Imperial, 230, Hospital Municipal Pimental-Bonsucesso, Prq das Nações",
+            "endereco" : "Rua Imperial, 230, Prq das Nações",
             "municipio" : "GUARULHOS",
             "nome" : "Guarulhos-Pimentas"
         },
         {
             "endereco" : "strada de Itapecerica, 5859, Campus UNASP, Capão Redondo",
-            "municipio" : "SAO PAULO",
+            "municipio" : "SÃO PAULO",
             "nome" : "Capão Redondo"
         },
         {
@@ -75,72 +75,72 @@ addresses = [
             "nome" : "Carapicuíba"
         },
         {
-            "endereco" : "Av. Doutor Arnaldo, 725, Faculdade de Saúde Pública, Sumaré",
-            "municipio" : "SAO PAULO",
+            "endereco" : "Av. Doutor Arnaldo, 725, Sumaré",
+            "municipio" : "SÃO PAULO",
             "nome" : "Cerqueira César"
         },
         {
-            "endereco" : "Av. Professor Lineu Prestes, 2242, Cidade Universitária, Butantã",
-            "municipio" : "SAO PAULO",
+            "endereco" : "Av. Professor Lineu Prestes, 2242, Butantã",
+            "municipio" : "SÃO PAULO",
             "nome" : "Cid.Universitária-USP-Ipen"
         },
         {
-            "endereco" : "Rua Salgado Filho, 121, Prq. Fernando Jorge",
+            "endereco" : "Rua Salgado Filho, 121",
             "municipio" : "CUBATAO",
             "nome" : "Cubatão-Centro"
         },
         {
-            "endereco" : "v. Paulo Guilguer Reimberg, 2448, E.E. Pres. Tancredo A. Neves, Jd Novo Horizonte",
-            "municipio" : "SAO PAULO",
+            "endereco" : "v. Paulo Guilguer Reimberg, 2448",
+            "municipio" : "SÃO PAULO",
             "nome" : "Grajaú-Parelheiros"
         },
         {
-            "endereco" : "Av. João Bernardo Medeiros, 173, Paço Municipal, Jd Bom Clima",
+            "endereco" : "Av. João Bernardo Medeiros, 173, Jd Bom Clima",
             "municipio" : "GUARULHOS",
             "nome" : "Guarulhos-Paço Municipal"
         },
         {
-            "endereco" : "Av. Embaixador Macedo Soares, 12889, Centro de Trein. da Polícia Militar, Vl Ribeiro de Barros",
-            "municipio" : "SAO PAULO",
+            "endereco" : "Av. Embaixador Macedo Soares, 12889, Vl Ribeiro de Barros",
+            "municipio" : "SÃO PAULO",
             "nome" : "Marg.Tietê-Pte Remédios"
         },
         {
-            "endereco" : "Rua Vitorino Dell Antônia, s\/nº, Paço Municipal, Vila Noêmia",
+            "endereco" : "Rua Vitorino Dell Antônia, s/nº, Paço Municipal, Vila Noêmia",
             "municipio" : "MAUA",
             "nome" : "Mauá"
         },
         {
-            "endereco" : "Rua Capitão José Amaral, 80, E.E. Cacilda Becker, Vila Portuguesa",
-            "municipio" : "SAO PAULO",
+            "endereco" : "Rua Capitão José Amaral, 80, Vila Portuguesa",
+            "municipio" : "SÃO PAULO",
             "nome" : "N.Senhora do Ó"
         },
         {
-            "endereco" : "Av. dos Autonomistas, s\/nº, Esquina com Rua São Mauricio, Vila Quitaúna",
+            "endereco" : "Av. dos Autonomistas, s/nº, Vila Quitaúna",
             "municipio" : "OSASCO",
             "nome" : "Osasco"
         },
         {
-            "endereco" : "Parque Dom Pedro II, s\/nº, Palácio das Indústrias, Centro",
-            "municipio" : "SAO PAULO",
+            "endereco" : "Parque Dom Pedro II, s/nº, Centro",
+            "municipio" : "SÃO PAULO",
             "nome" : "Parque D.Pedro II"
         },
         {
-            "endereco" : "Estrada Turística do Jaraguá, s\/nº, Altura do n. 9000, Parque Est. do Jaraguá, Vila Jaraguá",
-            "municipio" : "SAO PAULO",
+            "endereco" : "Estrada Turística do Jaraguá, s/nº, Altura do n. 9000, Vila Jaraguá",
+            "municipio" : "SÃO PAULO",
             "nome" : "Pico do Jaraguá"
         },
         {
-            "endereco" : "Rua Manágua, 2, Posto Pueric. Alto Capuava, Prq Capuava",
+            "endereco" : "Rua Manágua, 2, Prq Capuava",
             "municipio" : "SANTO ANDRE",
             "nome" : "S.André-Capuava"
         },
         {
-            "endereco" : "Rua Xavier de Toledo, 521, EMEB Arlindo Ferreira, Vila Paulicéia",
+            "endereco" : "Rua Xavier de Toledo, 521, Vila Paulicéia",
             "municipio" : "SAO BERNARDO DO CAMPO",
             "nome" : "S.Bernardo-Paulicéia"
         },
         {
-            "endereco" : "Presidente Kennedy, 700, Hosp. Mun. de Emerg. Albert Sabin, Santa Paula",
+            "endereco" : "Presidente Kennedy, 700, Santa Paula",
             "municipio" : "SAO CAETANO DO SUL",
             "nome" : "São Caetano do Sul"
         },
