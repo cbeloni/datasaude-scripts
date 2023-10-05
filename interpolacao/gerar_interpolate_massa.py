@@ -60,7 +60,7 @@ def interpolar_massa(arquivo, campo, vmin, vmax, escala):
     geo_json_output_path = f"geojson/{arquivo}.geojson"
     df.to_file(geo_json_output_path, driver="GeoJSON")
 
-    output_png_path = f'png/{arquivo}_{vmin}_{vmax}_{escala}.png'
+    output_png_path = f'png_{escala}/{arquivo}_{vmin}_{vmax}_{escala}.png'
     gera_png(geo_json_output_path, output_png_path, campo, df, vmin, vmax)
 
     output_filename_transparente = f'png_{escala}/{arquivo}_{vmin}_{vmax}_{escala}.png'
