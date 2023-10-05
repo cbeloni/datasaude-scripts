@@ -26,7 +26,7 @@ def idw_apply(x, known, nn=-1, power=1):
     pred = inverse_distance_weighting(known, np.array([x.x, x.y]), nn, power)
     return pd.Series([x, pred])
 
-def gera_png(geo_json_output_path, output_png_path, campo):
+def gera_png(geo_json_output_path, output_png_path, campo, df, vmin, vmax):
     gdf = gpd.read_file(geo_json_output_path)
     colors = ['#008000', '#FFFF00', '#FFA500', '#FF0000', '#800080']
     #cmap = ListedColormap(colors)
@@ -35,13 +35,13 @@ def gera_png(geo_json_output_path, output_png_path, campo):
     ax.set_axis_off()
     ax.set_xlim(df.geometry.total_bounds[0], df.geometry.total_bounds[2])
     ax.set_ylim(df.geometry.total_bounds[1], df.geometry.total_bounds[3])
-    gdf.plot(column=campo, ax=ax, legend=False, cmap=cmap, vmin=10, vmax=50)
+    gdf.plot(column=campo, ax=ax, legend=False, cmap=cmap, vmin=vmin, vmax=vmax)
     plt.tight_layout()
     plt.savefig(output_png_path, dpi=100, bbox_inches='tight', pad_inches=0.1)
     print(f'Imagem salva em {output_png_path}')
 
 def gera_transparencia(output_filename_transparente):
-    imagem_png = Image.open(output_png_path)
+    imagem_png = Image.open(output_filename_transparente)
 
     transparencia = 255  # transparência parte branca em 100%
     mascara_transparencia = imagem_png.convert("L").point(
@@ -106,25 +106,25 @@ def interpolar(amostra_file, campo_amostra, contorno_file, vmin, vmax):
 
     # Predict
     predicted = canvas['points'].apply(idw_apply, known=arr, power=POWER)
-    predicted.columns = ['coordinates', 'mp10']
+    predicted.columns = ['coordinates', campo_amostra]
 
     colors = ['#008000', '#FFFF00', '#FFA500', '#FF0000', '#800080']
     #cmap = ListedColormap(colors)
     cmap = LinearSegmentedColormap.from_list('custom_colormap', colors, N=256)
 
     df = canvas.join(predicted)
-    df = df[['geometry', 'mp10']]
+    df = df[['geometry', campo_amostra]]
     ax.set_axis_off()
-    ax = df.plot(column='mp10', legend=False, vmin=vmin, vmax=vmax, figsize=(10, 10), cmap=cmap, ax=ax)
+    ax = df.plot(column=campo_amostra, legend=False, vmin=vmin, vmax=vmax, figsize=(10, 10), cmap=cmap, ax=ax)
 
     plt.tight_layout()
-    plt.show()
+    #plt.show()
     return df
 
 
 if __name__ == '__main__':
-    vmin = 10
-    vmax = 45
+    vmin = None
+    vmax = None
     poluente = 'mp10'
     data = '20220101'
     nome_arquivo = f'poluente_{poluente}_{data}'
@@ -141,7 +141,7 @@ if __name__ == '__main__':
     df.to_file(geo_json_output_path, driver="GeoJSON")
 
     output_png_path = f'output/{nome_arquivo}.png'
-    gera_png(geo_json_output_path, output_png_path, poluente)
+    gera_png(geo_json_output_path, output_png_path, poluente, df, vmin, vmax)
 
     output_filename_transparente = f'output/{nome_arquivo}.png'
     gera_transparencia(output_filename_transparente)

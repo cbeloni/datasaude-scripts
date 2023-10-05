@@ -4,6 +4,10 @@
 venv/
 PESQUISA_J00_ao_J99_2022_2023_Completo.csv
 /.venv/
+interpolacao/csv/
+interpolacao/geojson/
+interpolacao/png_fixa/
+interpolacao/png_movel/
 /scraping_cetesb/files/01012022_01012023_63_63.csv
 /scraping_cetesb/files/01012022_01012023_63_63.html
 /scraping_cetesb/files/01012022_01012023_64_12.html
