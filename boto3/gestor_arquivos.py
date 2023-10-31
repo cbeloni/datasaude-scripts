@@ -1,8 +1,12 @@
 import boto3
 from dotenv import load_dotenv, dotenv_values
+from core.database import criar_conexao
+from config.log_config import Log
 
 load_dotenv()
-_config = dotenv_values(".env")
+_config = dotenv_values("../.env")
+_log = Log("gestor_arquivos")
+_PATH_VOLUME = _config['PATH_VOLUME']
 
 _s3_client = boto3.client('s3',
                           aws_access_key_id=_config['aws_access_key_id'],
@@ -29,12 +33,39 @@ def remover(bucket_name: str, key: str):
 
     return _s3_client.delete_object(Bucket=bucket_name, Key=object_key)
 
+def query_poluente_plot():
+    return """
+        select arquivo_escala_fixa_png, arquivo_escala_movel_png 
+         from poluente_plot;
+    """
+
 if __name__ == '__main__':
-    enviar('maps-pub',
-           '/home/caue/Imagens/mapa/arquivo_com_transparencia.png',
-           '2022_mp10_2_1.png',
-           'image/png')
-    print('Arquivo enviado com sucesso!')
+    _log.info("Criando conexão")
+    conexao = criar_conexao(_config)
+    _log.info(f"conectado: {conexao.is_connected()}")
+
+    cursor = conexao.cursor()
+    cursor.execute(query_poluente_plot())
+
+    for row in cursor.fetchall():
+        arquivo_escala_fixa_png, arquivo_escala_movel_png = row
+        enviar('maps-pub',
+               f'{_PATH_VOLUME}{arquivo_escala_fixa_png}',
+               arquivo_escala_fixa_png,
+               'image/png')
+
+        enviar('maps-pub',
+               f'{_PATH_VOLUME}{arquivo_escala_movel_png}',
+               arquivo_escala_movel_png,
+               'image/png')
+
+    cursor.close()
+    conexao.close()
+    # enviar('maps-pub',
+    #        '/home/caue/Imagens/mapa/arquivo_com_transparencia.png',
+    #        '2022_mp10_2_1.png',
+    #        'image/png')
+    # print('Arquivo enviado com sucesso!')
 
     # listar('maps-pub')
     
