@@ -53,7 +53,7 @@ def fazer_previsao(modelo, temperatura_previsao):
 def salvar_csv(arquivo, linha):
     # Abra o arquivo de texto no modo de escrita e adicione a linha
     with open(arquivo, mode='a', newline='') as arquivo_txt:
-        arquivo_txt.write(linha)
+        arquivo_txt.write(linha + "\n")
 
 if __name__ == '__main__':
     _log.info("Criando conexão")
@@ -93,5 +93,5 @@ if __name__ == '__main__':
         dados_poluentes = [float(valor) if valor is not None else None for valor in resultado[0:6]]
         campos_concatenados = f"{MP10}|{NO}|{NO2}|{O3}|{TEMP}|{UR}|{data_poluente}|{DT_ATENDIMENTO}|{DS_LEITO}|{DT_ALTA}|{DS_CID}|{previsao}"
         print(campos_concatenados)
-        salvar_csv('output.csv', campos_concatenados)
+        salvar_csv('resultado_naive_bayes.csv', campos_concatenados)
         index += 1
