@@ -61,7 +61,7 @@ if __name__ == '__main__':
     _log.info(f"conectado: {conexao.is_connected()}")
 
     cursor = conexao.cursor()
-    cursor.execute(query_dados_treino(), ("20220101", "20220630"))
+    cursor.execute(query_dados_treino(), ("20220101", "20221130"))
 
     poluentes = []
     cid = []
@@ -74,7 +74,7 @@ if __name__ == '__main__':
     modelo = treinar_modelo(np.array(poluentes), np.array(cid))
 
     # Fazer previsões
-    cursor.execute(query_dados_treino(), ("20220801", "20220830"))
+    cursor.execute(query_dados_treino(), ("20221201", "20221231"))
     poluentes = []
     for resultado in cursor.fetchall():
         campos = [float(valor) if valor is not None else None for valor in resultado[0:6]]
@@ -83,7 +83,7 @@ if __name__ == '__main__':
     previsoes = fazer_previsao(modelo, np.array(poluentes))
 
     # Salvar resultado
-    cursor.execute(query_dados_treino(), ("20220801", "20220830"))
+    cursor.execute(query_dados_treino(), ("20221201", "20221231"))
     campos = [float(valor) if valor is not None else None for valor in resultado[0:6]]
     poluentes.append(campos)
     index = 0
