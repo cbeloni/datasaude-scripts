@@ -21,7 +21,21 @@ def query_dados_treino():
     MP10.data AS data_poluente,
     p.DT_ATENDIMENTO,
     p.DS_LEITO,
-    p.DT_ALTA
+    p.DT_ALTA,
+    CASE
+        WHEN DS_LEITO IS NULL THEN 0
+        ELSE 1
+    END AS internacao,
+    CASE
+        when upper(DS_LEITO) like '%UTI%' THEN 'GRAVE'
+        WHEN DS_LEITO IS NULL THEN 'LEVE'
+        ELSE 'MODERADO'
+    END AS gravidade,
+    concat(ds_cid, CASE
+        when upper(DS_LEITO) like '%UTI%' THEN '_GRAVE'
+        WHEN DS_LEITO IS NULL THEN '_LEVE'
+        ELSE '_MODERADO'
+    END) as DS_CID_GRAVIDADE
 FROM paciente_interpolacao MP10
 JOIN paciente_interpolacao NO ON MP10.id_coordenada = NO.id_coordenada
 JOIN paciente_interpolacao NO2 ON MP10.id_coordenada = NO2.id_coordenada
@@ -65,13 +79,19 @@ if __name__ == '__main__':
 
     poluentes = []
     cid = []
+    internacao = []
+    gravidade = []
+    cid_gravidade = []
     for resultado in cursor.fetchall():
         campos = [float(valor) if valor is not None else None for valor in resultado[0:6]]
         poluentes.append(campos)
         cid.append(resultado[6])
+        internacao.append(resultado[11])
+        gravidade.append(resultado[12])
+        cid_gravidade.append(resultado[13])
 
     # Treinar o modelo
-    modelo = treinar_modelo(np.array(poluentes), np.array(cid))
+    modelo = treinar_modelo(np.array(poluentes), np.array(cid_gravidade))
 
     # Fazer previsões
     cursor.execute(query_dados_treino(), ("20221201", "20221231"))
@@ -88,10 +108,10 @@ if __name__ == '__main__':
     poluentes.append(campos)
     index = 0
     for row in cursor.fetchall():
-        MP10, NO, NO2, O3, TEMP, UR, DS_CID, data_poluente, DT_ATENDIMENTO, DS_LEITO, DT_ALTA = row
+        MP10, NO, NO2, O3, TEMP, UR, DS_CID, data_poluente, DT_ATENDIMENTO, DS_LEITO, DT_ALTA, INTERNACAO, gravidade, cid_gravidade = row
         previsao = previsoes[index]
         dados_poluentes = [float(valor) if valor is not None else None for valor in resultado[0:6]]
-        campos_concatenados = f"{MP10}|{NO}|{NO2}|{O3}|{TEMP}|{UR}|{data_poluente}|{DT_ATENDIMENTO}|{DS_LEITO}|{DT_ALTA}|{DS_CID}|{previsao}"
+        campos_concatenados = f"{MP10}|{NO}|{NO2}|{O3}|{TEMP}|{UR}|{data_poluente}|{DT_ATENDIMENTO}|{DS_LEITO}|{DT_ALTA}|{DS_CID}|{cid_gravidade}|{previsao}"
         print(campos_concatenados)
         salvar_csv('resultado_naive_bayes.csv', campos_concatenados)
         index += 1
