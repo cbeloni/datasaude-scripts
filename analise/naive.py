@@ -35,7 +35,24 @@ def query_dados_treino():
         when upper(DS_LEITO) like '%UTI%' THEN '_GRAVE'
         WHEN DS_LEITO IS NULL THEN '_LEVE'
         ELSE '_MODERADO'
-    END) as DS_CID_GRAVIDADE
+    END) as DS_CID_GRAVIDADE,
+    CASE 
+    	WHEN DT_ATENDIMENTO  BETWEEN '2022-03-20' AND '2022-06-20' THEN 1
+    ELSE 0
+  	END AS outono,
+  	CASE 
+    	WHEN DT_ATENDIMENTO  BETWEEN '2022-06-21' AND '2022-09-22' THEN 1
+    ELSE 0
+  	END AS inverno,
+  	CASE 
+    	WHEN DT_ATENDIMENTO  BETWEEN '2022-09-23' AND '2022-12-20' THEN 1
+    ELSE 0
+  	END AS primavera,
+  	CASE 
+    	WHEN DT_ATENDIMENTO  BETWEEN '2022-12-21' AND '2022-12-31' THEN 1
+    	WHEN DT_ATENDIMENTO  BETWEEN '2022-01-01' AND '2022-03-19' THEN 1
+    ELSE 0
+  	END AS verao
 FROM paciente_interpolacao MP10
 JOIN paciente_interpolacao NO ON MP10.id_coordenada = NO.id_coordenada
 JOIN paciente_interpolacao NO2 ON MP10.id_coordenada = NO2.id_coordenada
@@ -69,13 +86,18 @@ def salvar_csv(arquivo, linha):
     with open(arquivo, mode='a', newline='') as arquivo_txt:
         arquivo_txt.write(linha + "\n")
 
+def campos(resultado):
+    indices_desejados = [4, 5, 11]
+    campos = [float(resultado[i]) if resultado[i] is not None else None for i in indices_desejados]
+    return campos
+
 if __name__ == '__main__':
     _log.info("Criando conexão")
     conexao = criar_conexao(_config)
     _log.info(f"conectado: {conexao.is_connected()}")
 
     cursor = conexao.cursor()
-    cursor.execute(query_dados_treino(), ("20220101", "20221130"))
+    cursor.execute(query_dados_treino(), ("20220101", "20221030"))
 
     poluentes = []
     cid = []
@@ -83,7 +105,8 @@ if __name__ == '__main__':
     gravidade = []
     cid_gravidade = []
     for resultado in cursor.fetchall():
-        campos = [float(valor) if valor is not None else None for valor in resultado[0:6]]
+        indices_desejados = [0, 1, 2, 3, 4, 5, 14, 15, 16, 17]
+        campos = [float(resultado[i]) if resultado[i] is not None else None for i in indices_desejados]
         poluentes.append(campos)
         cid.append(resultado[6])
         internacao.append(resultado[11])
@@ -91,27 +114,25 @@ if __name__ == '__main__':
         cid_gravidade.append(resultado[13])
 
     # Treinar o modelo
-    modelo = treinar_modelo(np.array(poluentes), np.array(cid_gravidade))
+    modelo = treinar_modelo(np.array(poluentes), np.array(internacao))
 
     # Fazer previsões
     cursor.execute(query_dados_treino(), ("20221201", "20221231"))
-    poluentes = []
+    poluentes_prev = []
     for resultado in cursor.fetchall():
-        campos = [float(valor) if valor is not None else None for valor in resultado[0:6]]
-        poluentes.append(campos)
+        indices_desejados = [0, 1, 2, 3, 4, 5, 14, 15, 16, 17]
+        campos = [float(resultado[i]) if resultado[i] is not None else None for i in indices_desejados]
+        poluentes_prev.append(campos)
 
-    previsoes = fazer_previsao(modelo, np.array(poluentes))
+    previsoes = fazer_previsao(modelo, np.array(poluentes_prev))
 
     # Salvar resultado
     cursor.execute(query_dados_treino(), ("20221201", "20221231"))
-    campos = [float(valor) if valor is not None else None for valor in resultado[0:6]]
-    poluentes.append(campos)
     index = 0
     for row in cursor.fetchall():
-        MP10, NO, NO2, O3, TEMP, UR, DS_CID, data_poluente, DT_ATENDIMENTO, DS_LEITO, DT_ALTA, INTERNACAO, gravidade, cid_gravidade = row
+        MP10, NO, NO2, O3, TEMP, UR, DS_CID, data_poluente, DT_ATENDIMENTO, DS_LEITO, DT_ALTA, INTERNACAO, gravidade, cid_gravidade, *campos = row
         previsao = previsoes[index]
-        dados_poluentes = [float(valor) if valor is not None else None for valor in resultado[0:6]]
-        campos_concatenados = f"{MP10}|{NO}|{NO2}|{O3}|{TEMP}|{UR}|{data_poluente}|{DT_ATENDIMENTO}|{DS_LEITO}|{DT_ALTA}|{DS_CID}|{cid_gravidade}|{previsao}"
+        campos_concatenados = f"{MP10}|{NO}|{NO2}|{O3}|{TEMP}|{UR}|{data_poluente}|{DT_ATENDIMENTO}|{DS_LEITO}|{DT_ALTA}|{DS_CID}|{INTERNACAO}|{previsao}"
         print(campos_concatenados)
         salvar_csv('resultado_naive_bayes.csv', campos_concatenados)
         index += 1
