@@ -2,8 +2,8 @@ from datetime import datetime
 
 import pandas as pd
 
-from core import PoluenteHistorico
-from core.database_sqlite import SessionSqlite, create_all
+from core.models import PoluenteHistorico
+from core.database_mysql import SessionMysql, create_all
 from config.log_config import Log
 from core.poluente_repository import update_poluente_scrap_finish, get_poluente_scrap_pendentes
 
@@ -15,7 +15,7 @@ def csv_to_sql(arquivo: str):
     _log.info("Starting poluente historico")
     dados_csv = pd.read_csv(arquivo)
 
-    sessionSqlite = SessionSqlite()
+    sessionMysql = SessionMysql()
 
     for indice, linha in dados_csv.iterrows():
         _log.info(linha)
@@ -60,10 +60,10 @@ def csv_to_sql(arquivo: str):
             taxa=taxa
         )
 
-        sessionSqlite.add(registro)
-        sessionSqlite.commit()
+        sessionMysql.add(registro)
+        sessionMysql.commit()
 
-    sessionSqlite.close()
+    sessionMysql.close()
 
 def run_csv_to_sql():
     for i in get_poluente_scrap_pendentes(status='PARSED'):

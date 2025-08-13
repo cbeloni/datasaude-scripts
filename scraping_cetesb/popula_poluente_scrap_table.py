@@ -12,7 +12,7 @@ _config = dotenv_values("../.env")
 class PopulaPoluenteScrap:
     _dados = []
 
-    def __init__(self,ano_incial = 2022):
+    def __init__(self,ano_incial = 2018):
         self._ano_inicial = ano_incial
 
     def gerar(self):
@@ -87,7 +87,7 @@ if __name__ == '__main__':
     load_dotenv()
     _config = dotenv_values("../.env")
 
-    ano_inicial=2022
+    ano_inicial=2018
     populaPoluentes = PopulaPoluenteScrap(ano_inicial)
     dados = populaPoluentes.gerar()
     for d in dados:

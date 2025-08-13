@@ -7,7 +7,7 @@ load_dotenv()
 _config = dotenv_values("../.env")
 _log = Log('poluente_repository')
 
-def get_poluente_scrap_pendentes(data_inicial: str = '2022-01-01 00:00:00', status: str = 'FINALIZADO') -> list:
+def get_poluente_scrap_pendentes(data_inicial: str = '2018-01-01 00:00:00', status: str = 'FINALIZADO') -> list:
     _conexao = criar_conexao(_config)
     _log.info(f"conectado: {_conexao.is_connected()}")
     cursor = _conexao.cursor()

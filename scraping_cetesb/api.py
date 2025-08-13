@@ -1,8 +1,8 @@
 import requests
 
-from dotenv import load_dotenv, dotenv_values
-load_dotenv()
-_config = dotenv_values("../.env")
+from config.enviroment import get_config
+
+_config = get_config()
 
 class CestebConsuilta:
 
