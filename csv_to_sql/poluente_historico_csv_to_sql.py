@@ -72,7 +72,7 @@ def run_csv_to_sql():
         csv_file = f"files/{file}.csv"
         try:
             csv_to_sql(csv_file)
-            update_poluente_scrap_finish(id, 'FINALIZADO', file)
+            update_poluente_scrap_finish(id, 'INSERTED', file)
         except Exception as ex:
             _log.error(f"Error: {ex}")
 
