@@ -66,7 +66,7 @@ def csv_to_sql(arquivo: str):
     sessionMysql.close()
 
 def run_csv_to_sql():
-    for i in get_poluente_scrap_pendentes(status='PARSED'):
+    for i in get_poluente_scrap_pendentes(status='FINALIZADO'):
         id, i_rede, data_inicial, data_final, i_tipo_dado, estacao, parametro, created_at, updated_at, file = i
         _log.info(f"Inserindo: files/{file}")
         csv_file = f"files/{file}.csv"
