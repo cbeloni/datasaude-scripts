@@ -1,6 +1,10 @@
 import sqlite3
 import pandas as pd
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from config.log_config import Log
+from core.database import criar_conexao
 from interpolacao.interpolate import interpolar, gera_png, gera_transparencia
 
 _log = Log('poluente_repository')
@@ -14,9 +18,9 @@ def update_poluente_plot(cursor, id, arquivo_csv, arquivo_geojson, arquivo_escal
                          status):
     _log.info(f"Atualizando poluente_plot id: {id}")
     query = """UPDATE poluente_plot 
-                  SET arquivo_csv = ?, arquivo_geojson = ?, arquivo_escala_fixa_png = ?, 
-                      arquivo_escala_movel_png = ? , status = ?, data_atual=DATE('now') 
-                WHERE id = ?"""
+                  SET arquivo_csv = %s, arquivo_geojson = %s, arquivo_escala_fixa_png = %s, 
+                      arquivo_escala_movel_png = %s , status = %s, data_atual=NOW() 
+                WHERE id = %s"""
     cursor.execute(query, (arquivo_csv, arquivo_geojson, arquivo_escala_fixa_png, arquivo_escala_movel_png, status, id))
 
 
@@ -39,8 +43,8 @@ def query_poluente_historico():
      e.y as y
     from poluente_historico p, estacao e
     where p.nome_estacao = e.nome
-    and TRIM(SUBSTR(nome_parametro, 1, INSTR(nome_parametro, ' ') - 1)) in (?)
-    and REPLACE(SUBSTR(data, 1, INSTR(data, ' ') - 1), '-', '') = ?
+    and TRIM(SUBSTR(nome_parametro, 1, INSTR(nome_parametro, ' ') - 1)) in (%s)
+    and REPLACE(SUBSTR(data, 1, INSTR(data, ' ') - 1), '-', '') = %s
     group by p.nome_estacao, codigo_estacao, unidade_medida,  TRIM(SUBSTR(nome_parametro, 1, INSTR(nome_parametro, ' ') - 1)), data, e.x, e.y;
     """
 
@@ -70,7 +74,7 @@ def interpolar_massa(arquivo, campo, vmin, vmax, escala):
 
 
 if __name__ == '__main__':
-    conexao = criar_conexao_sqlite()
+    conexao = criar_conexao()
     cursor = conexao.cursor()
 
     query_gerar_csv = query_poluente_plot('gerar_csv')
