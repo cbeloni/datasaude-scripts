@@ -1,5 +1,7 @@
 from datetime import datetime
 
+import mysql.connector
+
 import pandas as pd
 
 from core.models import PoluenteHistorico
@@ -59,9 +61,12 @@ def csv_to_sql(arquivo: str):
             concentracao=concentracao,
             taxa=taxa
         )
-
-        sessionMysql.add(registro)
-        sessionMysql.commit()
+        try:
+            _log.info(f"Inserindo registro: {registro}")
+            sessionMysql.add(registro)
+            sessionMysql.commit()
+        except Exception as ex:
+            _log.error(f"Error: {ex}")
 
     sessionMysql.close()
 
@@ -73,6 +78,9 @@ def run_csv_to_sql():
         try:
             csv_to_sql(csv_file)
             update_poluente_scrap_finish(id, 'INSERTED', file)
+        except mysql.connector.errors.IntegrityError as e:
+            _log.error(f"IntegrityError: {e}")
+            update_poluente_scrap_finish(id, 'INTEGRITY_ERROR', file)
         except Exception as ex:
             _log.error(f"Error: {ex}")
 
