@@ -72,8 +72,7 @@ def interpolar_massa(arquivo, campo, vmin, vmax, escala):
 
     return geo_json_output_path, output_filename_transparente
 
-
-if __name__ == '__main__':
+def main():
     conexao = criar_conexao()
     cursor = conexao.cursor()
 
@@ -119,3 +118,13 @@ if __name__ == '__main__':
 
     cursor.close()
     conexao.close()
+
+def loop():
+    try:
+        main()
+    except Exception as e:
+        _log.error(f"Erro no processamento: {e}")
+        loop()
+
+if __name__ == '__main__':
+    loop()
