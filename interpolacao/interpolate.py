@@ -3,7 +3,7 @@ import geopandas as gpd
 import numpy as np
 import matplotlib.pyplot as plt
 from PIL import Image
-from pyinterpolate.idw import inverse_distance_weighting
+from pyinterpolate import inverse_distance_weighting
 from matplotlib.colors import ListedColormap
 import rasterio
 from rasterio import features
@@ -20,7 +20,7 @@ def ler_fontes(amostra_file, contorno_file):
 def plotar_amostra(garr,ax):
     garr.set_geometry = 'geometry'
     garr.plot(ax=ax, column=0, legend=False, vmin=10, vmax=50, cmap='coolwarm')
-    plt.show()
+    #plt.show()
 
 def idw_apply(x, known, nn=-1, power=1):
     pred = inverse_distance_weighting(known, np.array([x.x, x.y]), nn, power)
