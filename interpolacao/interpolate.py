@@ -98,7 +98,7 @@ def interpolar(amostra_file, campo_amostra, contorno_file, vmin, vmax):
     geometries = gpd.points_from_xy(x=arr[:, 0], y=arr[:, 1])
     garr = gpd.GeoDataFrame(arr[:, -1])
     garr['geometry'] = geometries
-    garr.head()
+    #garr.head()
 
     fig, ax = plt.subplots(figsize=(10, 10))
 
@@ -117,7 +117,7 @@ def interpolar(amostra_file, campo_amostra, contorno_file, vmin, vmax):
     ax.set_axis_off()
     ax = df.plot(column=campo_amostra, legend=False, vmin=vmin, vmax=vmax, figsize=(10, 10), cmap=cmap, ax=ax)
 
-    plt.tight_layout()
+    #plt.tight_layout()
     #plt.show()
     return df
 

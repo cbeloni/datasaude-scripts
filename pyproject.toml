@@ -7,7 +7,7 @@ readme = "README.md"
 packages = [{include = "csv_to_sql"}]
 
 [tool.poetry.dependencies]
-python = "^3.9"
+python = "^3.13.3"
 mysql-connector-python = "^8.0.33"
 pandas = "^2.0.2"
 python-dotenv = "^1.0.0"
@@ -20,6 +20,7 @@ pyinterpolate = "^0.5.0.post1"
 rasterio = "^1.3.8"
 pyshp = "^2.3.1"
 sqlalchemy = "^2.0.43"
+pylibtiff = "^0.6.1"
 
 [build-system]
 requires = ["poetry-core"]
