@@ -1,4 +1,5 @@
 import sqlite3
+from time import sleep
 import pandas as pd
 import sys
 import os
@@ -107,15 +108,19 @@ def main():
         df = pd.read_csv(arquivo_csv)
         vmin_movel = df["media_diaria"].min()
         vmax_movel = df["media_diaria"].max()
+        try:
+            arquivo_geojson, arquivo_escala_movel_png = interpolar_massa(arquivo, 'media_diaria', vmin_movel, vmax_movel, 'movel')
 
-        arquivo_geojson, arquivo_escala_movel_png = interpolar_massa(arquivo, 'media_diaria', vmin_movel, vmax_movel, 'movel')
+            arquivo_geojson_fixo, arquivo_escala_fixa_png = interpolar_massa(arquivo, 'media_diaria', vmin, vmax, 'fixa')
 
-        arquivo_geojson_fixo, arquivo_escala_fixa_png = interpolar_massa(arquivo, 'media_diaria', vmin, vmax, 'fixa')
-
-        update_poluente_plot(cursor, id, arquivo_csv, arquivo_geojson,
-                             arquivo_escala_fixa_png, arquivo_escala_movel_png, 'finalizado')
-        conexao.commit()
-
+            update_poluente_plot(cursor, id, arquivo_csv, arquivo_geojson,
+                                arquivo_escala_fixa_png, arquivo_escala_movel_png, 'finalizado')
+            conexao.commit()
+        except Exception as e:
+            _log.error(f"Erro ao processar interpolação para {arquivo}: {e}")
+            update_poluente_plot(cursor, id, arquivo_csv, arquivo_geojson,
+                                arquivo_escala_fixa_png, arquivo_escala_movel_png, 'erro')
+            conexao.commit()
     cursor.close()
     conexao.close()
 
@@ -124,6 +129,7 @@ def loop():
         main()
     except Exception as e:
         _log.error(f"Erro no processamento: {e}")
+        sleep(60)
         loop()
 
 if __name__ == '__main__':
