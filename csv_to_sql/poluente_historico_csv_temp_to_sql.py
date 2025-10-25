@@ -1,5 +1,15 @@
+import logging
 import os
 from datetime import datetime
+import sys
+import os
+sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
+from core.models import PoluenteHistorico
+from core.database_mysql import SessionMysql, create_all
+
+create_all()
+
+sessionMysql = SessionMysql()
 
 def process_csv_file(csv_file_path):
     codigo_estacao = None
@@ -38,6 +48,34 @@ def process_csv_file(csv_file_path):
     
     return codigo_estacao, nome_estacao, dados
 
+def insert_database(dados):
+        data_formatada = datetime.strptime(dados['data'], "%d/%m/%Y")
+        registro = PoluenteHistorico(
+            tipo_rede='Automático',
+            tipo_monitoramento='CETESB',
+            tipo='Dados Primários',
+            data=data_formatada,
+            hora=dados['hora'],
+            codigo_estacao=dados['codigo_estacao'],
+            nome_estacao=dados['nome_estacao'],
+            nome_parametro='TEMP(Temperatura do Ar)',
+            unidade_medida='C',
+            media_horaria=dados['valor'],
+            media_movel='-',
+            valido='sim',
+            dt_amostragem='-',
+            dt_instalacao='-',
+            dt_retirada='-',
+            concentracao='-',
+            taxa='-'
+        )
+        try:
+            sessionMysql.add(registro)
+            sessionMysql.commit()
+        except Exception as ex:
+            logging.error(f"Error: {ex}")
+            sessionMysql.rollback()
+
 def main():
     csv_temp_folder = 'csv_temp'
         
@@ -50,14 +88,14 @@ def main():
         try:
             codigo_estacao, nome_estacao, dados = process_csv_file(csv_path)
             
-            print(f"Código da Estação: {codigo_estacao}")
+            print(f"Código dpa Estação: {codigo_estacao}")
             print(f"Nome da Estação: {nome_estacao}")
             print(f"Total de registros: {len(dados)}")
             
             for i, registro in enumerate(dados):
                 print(f"Registro {i+1}: Data: {registro['data']}, Hora: {registro['hora']}, Valor: {registro['valor']}")
-            
-                
+                insert_database({'codigo_estacao': codigo_estacao, 'nome_estacao': nome_estacao, **registro})
+
         except Exception as e:
             print(f"Erro ao processar {csv_file}: {str(e)}")
 
