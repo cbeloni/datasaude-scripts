@@ -98,6 +98,10 @@ def main():
 
         except Exception as e:
             print(f"Erro ao processar {csv_file}: {str(e)}")
+        
+        old_name = csv_path
+        new_name = csv_path.replace('.csv', '.bkp')
+        os.rename(old_name, new_name)
 
 if __name__ == "__main__":
     main()
