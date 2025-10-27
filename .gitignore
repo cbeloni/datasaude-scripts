@@ -15,3 +15,6 @@ png_movel/
 *.pyc
 __pycache__/
 *.pyo
+/csv_temp/
+/files/
+/geojson/
