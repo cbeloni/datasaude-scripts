@@ -6,6 +6,7 @@ import os
 sys.path.append(os.path.abspath(os.path.join(os.path.dirname(__file__), '..')))
 from core.models import PoluenteHistorico
 from core.database_mysql import SessionMysql, create_all
+import chardet
 
 create_all()
 
@@ -16,7 +17,13 @@ def process_csv_file(csv_file_path):
     nome_estacao = None
     dados = []
     
-    with open(csv_file_path, 'r', encoding='utf-8') as file:
+    # Detect encoding first
+    
+    with open(csv_file_path, 'rb') as f:
+        raw_data = f.read()
+        encoding = chardet.detect(raw_data)['encoding']
+    
+    with open(csv_file_path, 'r', encoding=encoding) as file:
         lines = file.readlines()
         
         if len(lines) > 3:
@@ -98,6 +105,7 @@ def main():
 
         except Exception as e:
             print(f"Erro ao processar {csv_file}: {str(e)}")
+            continue
         
         old_name = csv_path
         new_name = csv_path.replace('.csv', '.bkp')
