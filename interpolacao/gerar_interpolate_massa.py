@@ -29,7 +29,8 @@ def query_poluente_plot(status):
     return f"""
                 SELECT id, data_coleta, poluente, vmin, vmax, arquivo_csv, arquivo_geojson, arquivo_escala_fixa_png, arquivo_escala_movel_png
                 FROM poluente_plot
-                WHERE status = '{status}';
+                WHERE status = '{status}'
+                order by data_coleta asc;
             """
 
 
@@ -37,16 +38,16 @@ def query_poluente_historico():
     return """
     select  "'" || p.nome_estacao || "'" as nome_estacao, 
      codigo_estacao, 
-     TRIM(SUBSTR(nome_parametro, 1, INSTR(nome_parametro, ' ') - 1)) poluente,  
+     TRIM(SUBSTR(nome_parametro, 1, INSTR(nome_parametro, '(') - 1)) poluente,
      REPLACE(SUBSTR(data, 1, INSTR(data, ' ') - 1), '-', '') as data,  
      ROUND(avg(media_horaria)) as "media_diaria", 
      e.x as x, 
      e.y as y
     from poluente_historico p, estacao e
     where p.nome_estacao = e.nome
-    and TRIM(SUBSTR(nome_parametro, 1, INSTR(nome_parametro, ' ') - 1)) in (%s)
+    and TRIM(SUBSTR(nome_parametro, 1, INSTR(nome_parametro, '(') - 1)) in (%s)
     and REPLACE(SUBSTR(data, 1, INSTR(data, ' ') - 1), '-', '') = %s
-    group by p.nome_estacao, codigo_estacao, unidade_medida,  TRIM(SUBSTR(nome_parametro, 1, INSTR(nome_parametro, ' ') - 1)), data, e.x, e.y;
+    group by 1,2,3,4,6,7;
     """
 
 
