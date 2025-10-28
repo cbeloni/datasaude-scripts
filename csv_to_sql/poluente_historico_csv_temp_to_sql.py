@@ -100,6 +100,8 @@ def main():
             print(f"Total de registros: {len(dados)}")
             
             for i, registro in enumerate(dados):
+                if registro['valor'] == '':
+                    continue
                 print(f"Registro {i+1}: Data: {registro['data']}, Hora: {registro['hora']}, Valor: {registro['valor']}")
                 insert_database({'codigo_estacao': codigo_estacao, 'nome_estacao': nome_estacao, **registro})
 
