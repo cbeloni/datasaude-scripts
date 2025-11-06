@@ -10,14 +10,14 @@ def query_datas():
     return """
             select pb.id_paciente, pb.data_atendimento from  paciente_bronquiolite pb
             where not exists (select 1 from paciente_bronquiolite_datas pbd where pb.id_paciente  = pbd.id_paciente)
+            and pb.data_atendimento is not null
             """
 
 
 def get_insert_query():
     return "INSERT INTO paciente_bronquiolite_datas (id_paciente, data_atendimento) VALUES (%s, %s)"
 
-
-def main():
+if __name__ == "__main__":
     conexao = criar_conexao()
     cursor = conexao.cursor()
 
@@ -26,7 +26,7 @@ def main():
     results = cursor.fetchall()
     for row in results:
         (id_paciente, data_atendimento) = row
-        for i in range(1, 7):
-            data_insert = data_atendimento + timedelta(days=i)
+        for i in range(0, 7):
+            data_insert = data_atendimento - timedelta(days=i)
             cursor.execute(get_insert_query(), (id_paciente, data_insert))
             conexao.commit()
