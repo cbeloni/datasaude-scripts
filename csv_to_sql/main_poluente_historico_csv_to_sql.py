@@ -1,15 +1,18 @@
+import sys
+import os
+sys.path.append(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 from core.poluente_repository import get_poluente_scrap_pendentes
 from poluente_historico_csv_to_sql import csv_to_sql
 from config.log_config import Log
 
 _log = Log("main_poluente_historico_csv_to_sql")
 
-path = "/home/caue/Documentos/FILES_CETESB/2022_csv"
+path = "files"
 
 if __name__ == '__main__':
     # csv_to_sql()
 
-    resultados = get_poluente_scrap_pendentes('2022-01-01 00:00:00', 'PARSED')
+    resultados = get_poluente_scrap_pendentes(None, 'PARSED')
     for resultado in resultados:
         id, i_rede, data_inicial, data_final, i_tipo_dado, estacao, parametro, created_at, updated_at, file = resultado
 

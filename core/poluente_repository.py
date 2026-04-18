@@ -15,6 +15,7 @@ def get_poluente_scrap_pendentes(data_inicial: str = None, status: str = 'FINALI
         SELECT id, i_rede, data_inicial, data_final, i_tipo_dado, estacao, parametro, created_at, updated_at, file
         FROM poluente_scrap 
         WHERE status = %s
+        AND parametro = 25
     """
     filters = (status,)
     if data_inicial:

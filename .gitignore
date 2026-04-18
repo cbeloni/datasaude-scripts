@@ -18,3 +18,55 @@ __pycache__/
 /csv_temp/
 /files/
 /geojson/
+csv_poluentes_2025/
+atendimentos-autismo/pivot.py
+atendimentos-autismo/RelatorioSaudeProducao_pivot.csv
+atendimentos-autismo/RelatorioSaudeProducao.csv
+autismo/_Emissão de poluentes atmosféricos.csv
+autismo/_Resíduos Sólidos – Armazenador - completo.csv
+autismo/_Unidade Poluidora.csv
+autismo/_Unidade Poluidora.xlsx
+autismo/.DS_Store
+autismo/agrupar_poluentes.py
+autismo/agrupar_rediduos_solidos.py
+autismo/agrupar_unidade_poluidora.py
+autismo/arquivo_unificado.py
+autismo/arquivos_unificados.csv
+autismo/arquivos_unificados.xlsx
+autismo/emissao_poluentes_agrupados.csv
+autismo/emissao_poluentes_simples.csv
+autismo/residuos_solidos_agrupados.csv
+autismo/residuos_solidos_simples.csv
+autismo/unidade_poluidora_agrupado.csv
+autismo/unidade_poluidora_simple.csv
+core/poluente_repository.py
+csv_to_sql/main_poluente_historico_csv_to_sql.py
+csv_to_sql/paciente_bronquiolite_endereco.py
+csv_to_sql/paciente_bronquiolite.py
+csv_to_sql/__pycache__/__init__.cpython-311.pyc
+geolocalizacao/get_coordenadas.py
+geolocalizacao/main_lote.py
+geolocalizacao/main.py
+interpolacao/.DS_Store
+open-meteo/air-quality.py
+open-meteo/weather.py
+.cache.sqlite
+.DS_Store
+.env.local
+.gitignore
+1761219003021.csv
+1761219049862.csv
+csv temp_media_diaria.zip
+csv.zip
+inserts_completos.sql
+inserts_endereco.sql
+Pipfile
+poetry.lock
+pyproject.toml
+pyrightconfig.json
+core/poluente_repository.py
+core/poluente_repository.py
+csv_to_sql/main_poluente_historico_csv_to_sql.py
+csv_to_sql/__pycache__/__init__.cpython-311.pyc
+geolocalizacao/main.py
+geolocalizacao/main.py
