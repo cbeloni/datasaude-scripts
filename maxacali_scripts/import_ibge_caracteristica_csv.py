@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Importa dados de caracteristicas (CSV) para tabela MySQL `maxacali_caracteristica`."""
+"""Importa dados de caracteristicas (CSV) para tabela MySQL `ibge_caracteristica`."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ _config = dotenv_values('.env')
 
 # Ajuste aqui o caminho do CSV quando for executar.
 CSV_PATH = Path('/Users/cauebeloni/Documents/Projeto Pensi/dados/ibge/Agregados_por_setores_caracteristicas_domicilio1_BR.csv')
-TABLE_NAME = 'maxacali_caracteristica'
+TABLE_NAME = 'ibge_caracteristica'
 BATCH_SIZE = 1000
 ENCODING_CANDIDATES = ('utf-8-sig', 'utf-8', 'latin-1', 'cp1252')
 

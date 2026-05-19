@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Importa dados de pessoas (CSV) para tabela MySQL `maxacali_pessoas`."""
+"""Importa dados de pessoas (CSV) para tabela MySQL `ibge_pessoas`."""
 
 from __future__ import annotations
 
@@ -15,9 +15,19 @@ _config = dotenv_values('.env')
 
 # Ajuste aqui o caminho do CSV quando for executar.
 CSV_PATH = Path('/Users/cauebeloni/Documents/Projeto Pensi/dados/ibge/Agregados_por_setores_pessoas_indigenas_BR_filtrado.csv')
-TABLE_NAME = 'maxacali_pessoas'
+TABLE_NAME = 'ibge_pessoas'
 BATCH_SIZE = 1000
 ENCODING_CANDIDATES = ('utf-8-sig', 'utf-8', 'latin-1', 'cp1252')
+CD_SETORES_PERMITIDOS = {
+    '310660620000007',
+    '310660620000011',
+    '310660620000012',
+    '315765805000014',
+    '315765805000015',
+    '315765805000016',
+    '315765805000017',
+    '310660620000013',
+}
 
 TABLE_COLUMNS = ['cd_setor'] + [f'v{i:05d}' for i in range(1690, 1697)]
 
@@ -81,6 +91,9 @@ def read_rows(csv_path: Path) -> Iterable[tuple]:
             raise ValueError(f'CSV nao contem as colunas esperadas: {missing}')
 
         for row in reader:
+            cd_setor = as_none(row.get(field_map['cd_setor']))
+            if cd_setor not in CD_SETORES_PERMITIDOS:
+                continue
             parsed = []
             for col in TABLE_COLUMNS:
                 raw_value = row.get(field_map[col])
@@ -109,56 +122,28 @@ def chunked(rows: Iterable[tuple], size: int) -> Iterable[list[tuple]]:
         yield batch
 
 
-def carregar_cd_setor_validos(cursor) -> set[str]:
-    cursor.execute('SELECT cd_setor FROM maxacali')
-    return {row[0] for row in cursor.fetchall()}
-
-
-def filtrar_lote_por_cd_setor_existente(batch: list[tuple], cd_setores_validos: set[str]) -> list[tuple]:
-    return [row for row in batch if row[0] in cd_setores_validos]
-
-
 def run() -> None:
     if not CSV_PATH.exists():
         raise FileNotFoundError(f'Arquivo CSV nao encontrado: {CSV_PATH}')
 
     conexao = criar_conexao()
     insert_sql = build_insert_sql(TABLE_NAME)
-    total_lidos = 0
-    total_inseridos = 0
-    total_ignorados = 0
+    total = 0
 
     try:
         with conexao.cursor() as cursor:
-            cd_setores_validos = carregar_cd_setor_validos(cursor)
-            print(f'cd_setor validos carregados da maxacali: {len(cd_setores_validos)}')
-
             for batch in chunked(read_rows(CSV_PATH), BATCH_SIZE):
-                total_lidos += len(batch)
-                batch_filtrado = filtrar_lote_por_cd_setor_existente(batch, cd_setores_validos)
-                ignorados = len(batch) - len(batch_filtrado)
-                total_ignorados += ignorados
-
-                if batch_filtrado:
-                    cursor.executemany(insert_sql, batch_filtrado)
-                    conexao.commit()
-                    total_inseridos += len(batch_filtrado)
-
-                print(
-                    f'Lote lido: {len(batch)} | Inseridos/atualizados: {len(batch_filtrado)} | '
-                    f'Ignorados (cd_setor inexistente): {ignorados} | Total inseridos: {total_inseridos}'
-                )
+                cursor.executemany(insert_sql, batch)
+                conexao.commit()
+                total += len(batch)
+                print(f'Lote inserido: {len(batch)} | Total: {total}')
     except Exception:
         conexao.rollback()
         raise
     finally:
         conexao.close()
 
-    print(
-        'Importacao concluida. '
-        f'Total lidos: {total_lidos} | Total inseridos/atualizados: {total_inseridos} | '
-        f'Total ignorados: {total_ignorados}'
-    )
+    print(f'Importacao concluida. Total de registros processados: {total}')
 
 
 if __name__ == '__main__':

@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Importa dados de setores (CSV) para tabela MySQL `maxacali`."""
+"""Importa dados de setores (CSV) para tabela MySQL `ibge`."""
 
 from __future__ import annotations
 
@@ -16,9 +16,19 @@ _config = dotenv_values('.env')
 
 # Ajuste aqui o caminho do CSV quando for executar.
 CSV_PATH = Path('/Users/cauebeloni/Documents/Projeto Pensi/dados/ibge/Agregados_por_setores_basico_BR_20250417.csv')
-TABLE_NAME = 'maxacali'
+TABLE_NAME = 'ibge'
 BATCH_SIZE = 1000
 ENCODING_CANDIDATES = ('utf-8-sig', 'utf-8', 'latin-1', 'cp1252')
+CD_SETORES_PERMITIDOS = {
+    '310660620000007',
+    '310660620000011',
+    '310660620000012',
+    '315765805000014',
+    '315765805000015',
+    '315765805000016',
+    '315765805000017',
+    '310660620000013',
+}
 
 TABLE_COLUMNS = [
     'cd_setor',
@@ -163,6 +173,9 @@ def read_rows(csv_path: Path) -> Iterable[tuple]:
             raise ValueError(f'CSV nao contem as colunas esperadas: {missing}')
 
         for row in reader:
+            cd_setor = as_none(row.get(field_map['cd_setor']))
+            if cd_setor not in CD_SETORES_PERMITIDOS:
+                continue
             parsed = []
             for col in TABLE_COLUMNS:
                 raw_value = row.get(field_map[col])
