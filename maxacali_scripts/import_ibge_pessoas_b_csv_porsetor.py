@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""Importa dados de pessoas (CSV) para tabela MySQL `ibge_pessoas`."""
+"""Importa dados de pessoas (CSV) para tabela MySQL `ibge_pessoas_b`."""
 
 from __future__ import annotations
 
@@ -15,7 +15,7 @@ _config = dotenv_values('.env')
 
 # Ajuste aqui o caminho do CSV quando for executar.
 CSV_PATH = Path('/Users/cauebeloni/Documents/Projeto Pensi/dados/ibge/Agregados_por_setores_pessoas_indigenas_BR.csv')
-TABLE_NAME = 'ibge_pessoas'
+TABLE_NAME = 'ibge_pessoas_b'
 BATCH_SIZE = 1000
 ENCODING_CANDIDATES = ('utf-8-sig', 'utf-8', 'latin-1', 'cp1252')
 CD_SETORES_PERMITIDOS = {
@@ -29,7 +29,7 @@ CD_SETORES_PERMITIDOS = {
     '310660620000013',
 }
 
-TABLE_COLUMNS = ['cd_setor'] + [f'v{i:05d}' for i in range(1690, 1697)]
+TABLE_COLUMNS = ['cd_setor'] + [f'v{i:05d}' for i in range(1690, 2109)]
 
 
 def criar_conexao():
