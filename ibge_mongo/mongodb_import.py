@@ -4,10 +4,12 @@ from __future__ import annotations
 
 import csv
 import os
+import time
 from pathlib import Path
 from typing import Iterator
 
 try:
+    from .checkpoint import clear_checkpoint, load_checkpoint, save_checkpoint
     from .csv_utils import (
         clean_value,
         collection_name_from_csv_path,
@@ -19,6 +21,7 @@ try:
     )
     from .xlsx_dictionary import DEFAULT_DICTIONARY_PATH, load_dictionary_mapping
 except ImportError:  # pragma: no cover - fallback for direct script execution
+    from checkpoint import clear_checkpoint, load_checkpoint, save_checkpoint  # type: ignore[no-redef]
     from csv_utils import (  # type: ignore[no-redef]
         clean_value,
         collection_name_from_csv_path,
@@ -88,7 +91,7 @@ def get_mongo_database(mongo_database: str | None = None) -> str:
     return database
 
 
-def iter_csv_rows(csv_path: Path) -> tuple[list[str], Iterator[dict[str, str]]]:
+def iter_csv_rows(csv_path: Path, skip_rows: int = 0) -> tuple[list[str], Iterator[dict[str, str]]]:
     encoding = detect_csv_encoding(csv_path)
     dialect = detect_csv_dialect(csv_path, encoding)
     fp = csv_path.open("r", encoding=encoding, newline="")
@@ -98,6 +101,13 @@ def iter_csv_rows(csv_path: Path) -> tuple[list[str], Iterator[dict[str, str]]]:
 
     def row_iterator() -> Iterator[dict[str, str]]:
         try:
+            # Skip rows that were already processed in a previous run
+            for _ in range(skip_rows):
+                try:
+                    next(reader)
+                except StopIteration:
+                    return
+
             for raw_row in reader:
                 row: dict[str, str] = {}
                 for idx, header in enumerate(normalized_headers):
@@ -144,8 +154,10 @@ def row_to_document(row: dict[str, str], field_mapping: dict[str, str]) -> dict[
     return document
 
 
-def iter_documents(csv_path: Path, field_mapping: dict[str, str]) -> Iterator[dict[str, object]]:
-    headers, rows = iter_csv_rows(csv_path)
+def iter_documents(
+    csv_path: Path, field_mapping: dict[str, str], skip_rows: int = 0
+) -> Iterator[dict[str, object]]:
+    headers, rows = iter_csv_rows(csv_path, skip_rows=skip_rows)
     missing_variables = [
         header for header in headers if is_variable_header(header) and header not in field_mapping
     ]
@@ -167,37 +179,95 @@ def import_csv_to_mongodb(
     mongo_database: str | None = None,
     batch_size: int = 1000,
     collection_name: str | None = None,
+    checkpoint_interval: int = 100,
 ) -> int:
     from pymongo import MongoClient, ReplaceOne
+    from pymongo.errors import PyMongoError
 
     csv_path = Path(csv_path)
     if not csv_path.exists():
         raise FileNotFoundError(f"CSV file not found: {csv_path}")
 
+    csv_name = csv_path.stem
+
+    # Resume from checkpoint if available
+    checkpoint = load_checkpoint(csv_name)
+    skip_rows = checkpoint if checkpoint is not None else 0
+
     mapping = load_dictionary_mapping(dictionary_path, sheet_name)
     collection_name = collection_name or collection_name_from_csv_path(csv_path)
     uri = get_mongo_uri(mongo_uri)
     database_name = get_mongo_database(mongo_database)
-
-    client = MongoClient(uri)
-    collection = client[database_name][collection_name]
-    collection.create_index("cd_setor", unique=True)
-
-    total = 0
+    tentativa = 1
+    total = checkpoint if checkpoint is not None else 0
     operations: list[ReplaceOne] = []
-    try:
-        for document in iter_documents(csv_path, mapping):
+    documents = iter_documents(csv_path, mapping, skip_rows=skip_rows)
+    client = None
+    collection = None
+    index_created = False
+
+    if checkpoint:
+        print(
+            f"Checkpoint encontrado: {csv_name} ja havia processado {checkpoint} linhas. "
+            f"Retomando da linha {checkpoint + 1}."
+        )
+
+    while True:
+        try:
+            if client is None:
+                print(f"Tentativa {tentativa} de conectar ao MongoDB")
+                client = MongoClient(
+                    uri,
+                    serverSelectionTimeoutMS=1000,
+                    connectTimeoutMS=1000,
+                    socketTimeoutMS=1000,
+                )
+                client.admin.command("ping")
+                print("Conexao com o MongoDB estabelecida")
+                collection = client[database_name][collection_name]
+                index_created = False
+
+            if not index_created:
+                collection.create_index("cd_setor", unique=True)
+                index_created = True
+
+            if operations:
+                collection.bulk_write(operations, ordered=False)
+                operations.clear()
+                continue
+
+            try:
+                document = next(documents)
+            except StopIteration:
+                # Import completed successfully — clear checkpoint
+                clear_checkpoint(csv_name)
+                if client is not None:
+                    client.close()
+                return total
+
             sector_id = document.get("_id")
             if not sector_id:
                 raise ValueError(f"Row without cd_setor in '{csv_path.name}'")
+
             operations.append(ReplaceOne({"_id": sector_id}, document, upsert=True))
             total += 1
-            if len(operations) >= batch_size:
-                collection.bulk_write(operations, ordered=False)
-                operations.clear()
-        if operations:
-            collection.bulk_write(operations, ordered=False)
-    finally:
-        client.close()
 
-    return total
+            # Save checkpoint periodically
+            if total % checkpoint_interval == 0:
+                save_checkpoint(csv_name, total)
+
+            if total % 1000 == 0:
+                print(f"{total} documentos processados em {csv_path.name}")
+
+            if len(operations) >= batch_size:
+                continue
+        except PyMongoError as error:
+            print(f"Falha na tentativa {tentativa} de conexao com o MongoDB: {error}")
+            print("Aguardando 1 segundo para tentar novamente")
+            if client is not None:
+                client.close()
+                client = None
+                collection = None
+                index_created = False
+            time.sleep(1)
+            tentativa += 1

@@ -1,26 +1,16 @@
 import datetime
 import pandas as pd
-import mysql.connector
 import sqlite3
 from faker import Faker
 from dotenv import load_dotenv, dotenv_values
 import re
+from core.database import criar_conexao
 
 load_dotenv()
 
 _config = dotenv_values(".env")
 
 _fake = Faker()
-
-# Função para criar a conexão com o banco de dados
-def criar_conexao():
-    return mysql.connector.connect(
-        host= _config['host'],
-        user= _config['user'],
-        password= _config['password'],
-        database= _config['database'],
-        ssl_ca= _config['ssl_ca'] if 'ssl_ca' in _config else None
-    )
 
 def criar_conexao_sqlite():
     return sqlite3.connect('/home/caue/Documentos/pensi_projeto/POLUENTES_PACIENTES.sqlite')
@@ -32,7 +22,7 @@ def run():
                             encoding='iso-8859-1', sep=';', on_bad_lines='skip')
 
     # Criar a conexão com o banco de dados
-    conexao = criar_conexao()
+    conexao = criar_conexao(_config)
 
     # Criar o cursor para executar as consultas SQL
     cursor = conexao.cursor()    

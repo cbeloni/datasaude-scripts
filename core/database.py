@@ -1,3 +1,5 @@
+import time
+
 from dotenv import load_dotenv, dotenv_values
 import mysql.connector
 
@@ -20,15 +22,30 @@ def criar_conexao(config=None):
     if not _config:
         _config = config
 
-    _log.info(f"Abrindo conexão para: {_config}")
+    tentativa = 1
 
-    return mysql.connector.connect(
-        host=_config['host'],
-        user=_config['user'],
-        password=_config['password'],
-        database=_config['database'],
-        ssl_ca=_config['ssl_ca'] if 'ssl_ca' in _config else None
-    )
+    while True:
+        try:
+            _log.info(f"Tentativa {tentativa} de conectar ao banco")
+            print(f"Tentativa {tentativa} de conectar ao banco")
+            _log.info(f"Abrindo conexao para: {_config}")
+
+            conexao = mysql.connector.connect(
+                host=_config['host'],
+                user=_config['user'],
+                password=_config['password'],
+                database=_config['database'],
+                ssl_ca=_config['ssl_ca'] if 'ssl_ca' in _config else None
+            )
+            _log.info("Conexao com o banco estabelecida")
+            print("Conexao com o banco estabelecida")
+            return conexao
+        except mysql.connector.Error as error:
+            _log.error(f"Falha na tentativa {tentativa} de conexao: {error}")
+            print(f"Falha na tentativa {tentativa} de conexao: {error}")
+            print("Aguardando 1 segundo para tentar novamente")
+            time.sleep(1)
+            tentativa += 1
 
 def criar_engine_sqlalchemy(config=None):
     global _config
