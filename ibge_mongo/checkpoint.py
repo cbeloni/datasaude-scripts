@@ -10,7 +10,7 @@ import json
 from pathlib import Path
 
 CHECKPOINT_DIR = Path(
-    "/Users/cauebeloni/Documents/Projeto Pensi/dados/ibge/.checkpoints"
+    "/Users/cauebeloni/Documents/Projeto Pensi/datasaude-scripts/ibge_mongo/checkpoint/checkpoints"
 )
 
 
