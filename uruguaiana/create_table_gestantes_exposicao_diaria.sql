@@ -6,7 +6,10 @@
 --
 -- Uma linha por (gestante, dia). Janela = [data_referencia - 9 meses, data_referencia],
 -- ou seja, dia_relativo vai de -274 (aprox.) ate 0.
--- Volume estimado: 554 gestantes com endereco x ~274 dias = ~151.800 linhas.
+-- Volume: 708 gestantes x ~274 dias = 194.169 linhas.
+-- (TODAS as gestantes tem coordenada: quando o endereco nao existe ou nao e
+--  resolvivel, usa-se o centroide do municipio -29.75472 / -57.08833,
+--  sinalizado por gestantes_uruguaiana.geo_default = 1.)
 -- A carga e feita por UPSERT sobre (id_gestante, data), portanto e idempotente.
 -- =============================================================================
 
@@ -92,8 +95,8 @@ CREATE TABLE `gestantes_exposicao_diaria`
 -- -----------------------------------------------------------------------------
 -- Consultas de validacao (criterios de aceite do planejamento)
 -- -----------------------------------------------------------------------------
--- SELECT COUNT(*) FROM gestantes_exposicao_diaria;                            -- ~151.800
--- SELECT COUNT(DISTINCT id_gestante) FROM gestantes_exposicao_diaria;         -- 554
+-- SELECT COUNT(*) FROM gestantes_exposicao_diaria;                            -- 194.169
+-- SELECT COUNT(DISTINCT id_gestante) FROM gestantes_exposicao_diaria;         -- 708
 -- SELECT MIN(dia_relativo), MAX(dia_relativo) FROM gestantes_exposicao_diaria;-- -276 .. 0
 -- SELECT MIN(pm10_horas_validas), MAX(pm10_horas_validas) FROM gestantes_exposicao_diaria; -- 0 .. 24
 -- SELECT valido, COUNT(*) FROM gestantes_exposicao_diaria GROUP BY valido;

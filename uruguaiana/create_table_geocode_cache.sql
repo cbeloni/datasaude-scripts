@@ -25,10 +25,11 @@ CREATE TABLE `geocode_cache`
     `endereco_consultado`  varchar(1000) NOT NULL COMMENT 'Texto efetivamente enviado na query string',
 
     -- ----------------------------------------------------------- resultado
-    `status`               varchar(30)  NOT NULL COMMENT 'OK | BAIXA_CONFIANCA | NAO_CONFIRMADO | NAO_ENCONTRADO | ERRO_API | SEM_ENDERECO',
-    `latitude`             decimal(10, 7)        DEFAULT NULL COMMENT 'results[0].geometry.lat',
-    `longitude`            decimal(10, 7)        DEFAULT NULL COMMENT 'results[0].geometry.lng',
-    `confianca`            tinyint               DEFAULT NULL COMMENT 'results[0].confidence (0-10)',
+    `status`               varchar(30)  NOT NULL COMMENT 'OK | BAIXA_CONFIANCA | CENTROIDE_MUNICIPIO | FORA_DO_MUNICIPIO | NAO_ENCONTRADO | ERRO_API | SEM_ENDERECO',
+    `latitude`             decimal(10, 7)        DEFAULT NULL COMMENT 'results[0].geometry.lat (ou NULL se geo_default)',
+    `longitude`            decimal(10, 7)        DEFAULT NULL COMMENT 'results[0].geometry.lng (ou NULL se geo_default)',
+    `confianca`            tinyint               DEFAULT NULL COMMENT 'results[0].confidence (0-10). ATENCAO: 7 pode indicar fallback p/ o centroide',
+    `nivel`                varchar(30)           DEFAULT NULL COMMENT 'results[0].components._type: road | house | city | municipality | ...',
     `formatado`            varchar(500)          DEFAULT NULL COMMENT 'results[0].formatted',
     `componentes`          json                  DEFAULT NULL COMMENT 'results[0].components',
     `resposta_bruta`       json                  DEFAULT NULL COMMENT 'JSON integral da resposta (auditoria)',
@@ -52,14 +53,15 @@ CREATE TABLE `geocode_cache`
 -- -----------------------------------------------------------------------------
 -- INSERT INTO geocode_cache
 --     (endereco_hash, provider, endereco_original, endereco_consultado, status,
---      latitude, longitude, confianca, formatado, componentes, resposta_bruta, tentativas)
--- VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
+--      latitude, longitude, confianca, nivel, formatado, componentes, resposta_bruta, tentativas)
+-- VALUES (%s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s, %s)
 -- ON DUPLICATE KEY UPDATE
 --     endereco_consultado = VALUES(endereco_consultado),
 --     status = VALUES(status),
 --     latitude = VALUES(latitude),
 --     longitude = VALUES(longitude),
 --     confianca = VALUES(confianca),
+--     nivel = VALUES(nivel),
 --     formatado = VALUES(formatado),
 --     componentes = VALUES(componentes),
 --     resposta_bruta = VALUES(resposta_bruta),
@@ -72,14 +74,20 @@ CREATE TABLE `geocode_cache`
 -- Distribuicao de status:
 -- SELECT status, COUNT(*) FROM geocode_cache GROUP BY status;
 --
--- Taxa de sucesso por confianca:
--- SELECT confianca, COUNT(*) FROM geocode_cache GROUP BY confianca ORDER BY confianca;
+-- Taxa de sucesso por confianca e nivel (o cruzamento e o que importa):
+-- SELECT nivel, confianca, status, COUNT(*) FROM geocode_cache
+--  GROUP BY nivel, confianca, status ORDER BY confianca;
+--
+-- Quantos enderecos caem no centroide do municipio:
+-- SELECT COUNT(*) FROM geocode_cache WHERE status = 'CENTROIDE_MUNICIPIO';
 --
 -- Enderecos que consumiram mais de uma chamada (deveria ser sempre 1):
 -- SELECT endereco_consultado, tentativas FROM geocode_cache WHERE tentativas > 1;
 --
--- Pendencias para revisao manual (exportar para CSV):
--- SELECT endereco_original, endereco_consultado, status, formatado
+-- Pendencias para revisao manual: geo_default = 1 mas com endereco preenchido
+-- (ou seja, o endereco existe mas nao foi resolvido no logradouro):
+-- SELECT endereco_original, endereco_consultado, status, nivel, confianca, formatado
 --   FROM geocode_cache
---  WHERE status IN ('NAO_ENCONTRADO', 'BAIXA_CONFIANCA', 'NAO_CONFIRMADO', 'ERRO_API')
+--  WHERE status IN ('CENTROIDE_MUNICIPIO', 'FORA_DO_MUNICIPIO',
+--                   'NAO_ENCONTRADO', 'BAIXA_CONFIANCA', 'ERRO_API')
 --  ORDER BY status, endereco_original;
